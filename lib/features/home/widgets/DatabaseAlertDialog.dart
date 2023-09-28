@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:query_quest/features/user/home/bloc/HomeEvent.dart';
-
+import '../home_feature.dart';
 import '../../../../repositories/models/Database.dart';
 import '../../../../repositories/models/User.dart';
-import '../bloc/HomeBloc.dart';
 
 class DatabaseAlertDialog extends StatefulWidget {
   final String database;

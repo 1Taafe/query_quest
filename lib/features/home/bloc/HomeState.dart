@@ -15,6 +15,11 @@ class DefaultState extends HomeState {
   DefaultState(this.currentUser);
 }
 
+class DefaultOrganizerState extends HomeState {
+  final User currentUser;
+  DefaultOrganizerState(this.currentUser);
+}
+
 class SetDatabaseState extends HomeState{
   final String database;
 

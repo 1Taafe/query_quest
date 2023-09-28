@@ -17,14 +17,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState>{
   }
 
   Future<void> _checkTokenHandler(LoginEvent event, Emitter<LoginState> emitter) async {
+    String token = "";
     try{
       emitter(UserLoginState());
-      final String token = await sharedPrefs.getToken();
+      token = await sharedPrefs.getToken();
       final status = await authRepository.checkToken(token);
       emitter(SuccessfulLoginState(status));
       emitter(NeedToLoginState());
     }
     catch (error){
+      if(token.length > 0){
+        emitter(NeedToReturnState());
+      }
       emitter(NeedToLoginState());
     }
   }
@@ -35,7 +39,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState>{
       User user = (event as UserLoginEvent).user;
       var status = await authRepository.loginUser(user);
       await sharedPrefs.saveToken(status['access_token']!);
-      await Future.delayed(Duration(seconds: 3));
       emitter(SuccessfulLoginState(status));
       emitter(NeedToLoginState());
     }

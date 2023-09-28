@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:query_quest/features/user/home/bloc/HomeEvent.dart';
-import 'package:query_quest/features/user/home/bloc/HomeState.dart';
+import '../home_feature.dart';
 import 'package:query_quest/repositories/auth/AuthRepository.dart';
 import '../../../../repositories/models/Database.dart';
+import '../../../../repositories/models/Role.dart';
 import '../../../../repositories/shared_prefs/shared_preferences.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState>{
@@ -39,7 +39,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState>{
       else{
         currentUser.database = database;
       }
-      emitter(DefaultState(currentUser));
+      if(currentUser.role == Role.User){
+        emitter(DefaultState(currentUser));
+      }
+      else if(currentUser.role == Role.Organizer){
+        emitter(DefaultOrganizerState(currentUser));
+      }
     }
     catch(error){
       //print(error);

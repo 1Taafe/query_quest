@@ -3,14 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:query_quest/features/login/bloc/LoginEvent.dart';
 import 'package:query_quest/features/login/bloc/LoginState.dart';
-import 'package:query_quest/features/organizer/home/bloc/OrganizerHomeBloc.dart';
-import 'package:query_quest/features/organizer/home/bloc/OrganizerHomeEvent.dart';
-import 'package:query_quest/features/user/home/bloc/HomeBloc.dart';
-import 'package:query_quest/features/user/home/bloc/HomeEvent.dart';
+import '../../../features/home/home_feature.dart';
 
 import '../../../repositories/models/Role.dart';
 import '../../../repositories/models/User.dart';
-import '../../signup/bloc/SignupBloc.dart';
 import '../bloc/LoginBloc.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -304,21 +300,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 )
             ));
-            if(state.status['role'] == Role.User){
-              BlocProvider.of<HomeBloc>(context).add(GetUserProfileEvent(state.status['access_token']!));
-              Navigator.pushNamed(context, '/home');
-            }
-            else if(state.status['role'] == Role.Organizer){
-              BlocProvider.of<OrganizerHomeBloc>(context).add(GetOrganizerProfileEvent(state.status['access_token']!));
-              Navigator.pushNamed(context, '/organizer/home');
-            }
-            else if(state.status['role'] == Role.Admin){
-              Navigator.pushNamed(context, '/admin/home');
-            }
-            else if(state.status['role'] == Role.Watcher){
-              Navigator.pushNamed(context, '/watcher/home');
-            }
-
+            BlocProvider.of<HomeBloc>(context).add(GetUserProfileEvent(state.status['access_token']!));
+            Navigator.pushNamed(context, '/home');
           }
           else if(state is ErrorLoginState){
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -340,6 +323,29 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 )
             ));
+          }
+          else if(state is NeedToReturnState){
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                backgroundColor: Colors.orange,
+                content: Row(
+                  children: [
+                    Icon(
+                      Icons.warning_amber,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                    SizedBox(width: 16,),
+                    Text(
+                        'Ваша сессия истекла, необходим повторный вход',
+                        style: TextStyle(
+                            fontSize: 18
+                        )
+                    ),
+                  ],
+                )
+            ));
+            Navigator.of(context)
+                .popUntil(ModalRoute.withName("/"));
           }
         },
       )

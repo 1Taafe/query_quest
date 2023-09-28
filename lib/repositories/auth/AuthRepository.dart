@@ -1,8 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:query_quest/repositories/exceptions/AppException.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import '../models/Role.dart';
 import '../models/User.dart';
 
 class AuthRepository {
