@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:query_quest/features/createOlympics/bloc/create_olympics_bloc.dart';
-import 'package:query_quest/features/createOlympics/bloc/create_olympics_event.dart';
-import 'package:query_quest/features/createOlympics/bloc/create_olympics_state.dart';
-import 'package:query_quest/features/home/olympicsBloc/OlympicsBloc.dart';
-import 'package:query_quest/features/home/olympicsBloc/OlympicsEvent.dart';
-import 'package:query_quest/features/home/olympicsBloc/OlympicsState.dart';
+import 'package:query_quest/global/auth/bloc/auth_bloc.dart';
+import 'package:query_quest/global/auth/bloc/auth_state.dart';
 import '../../../repositories/models/Role.dart';
+import '../../../repositories/models/User.dart';
 import '../home_feature.dart';
 
-class UserHomeScreen extends StatefulWidget {
-  const UserHomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<UserHomeScreen> createState() => _UserHomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _UserHomeScreenState extends State<UserHomeScreen> {
+class _HomeScreenState extends State<HomeScreen> {
 
   int _selectedIndex = 0;
   NavigationRailLabelType labelType = NavigationRailLabelType.all;
@@ -37,6 +34,11 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
           if(state is DefaultState){
             return Scaffold(
               appBar: AppBar(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(
+                    bottom: Radius.circular(24),
+                  ),
+                ),
                 backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
                 leading: Hero(
                     tag: 'logo',
@@ -54,7 +56,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                   ElevatedButton.icon(
                       onPressed: (){},
                       icon: Icon(Icons.account_circle_outlined),
-                      label: Text('${state.currentUser.name!} ${state.currentUser.surname!}',
+                      label: Text('${state.currentUser.name} ${state.currentUser.surname}',
                         style: TextStyle(
                             fontSize: 16
                         ),
@@ -207,6 +209,17 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                       leading: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
+                          Container(
+                            child: Hero(
+                              tag: 'logo',
+                              child: Image.asset(
+                                'assets/images/bstu_logo.png',
+                                width: 48,
+                              ),
+                            ),
+                            padding: EdgeInsets.all(8),
+                          ),
+                          SizedBox(height: 8,),
                           PopupMenuButton(
                             offset: const Offset(100, 0),
                             tooltip: 'Профиль',
@@ -220,6 +233,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                             itemBuilder: (BuildContext context) {
                               return [
                                 PopupMenuItem(
+                                  enabled: false,
                                   child: Center(
                                     child: Column(
                                       mainAxisAlignment: MainAxisAlignment.center,
@@ -248,7 +262,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                       ],
                                     ),
                                   ),
-                                  enabled: false,
                                 ),
                                 PopupMenuItem(
                                   child: Row(
@@ -264,7 +277,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                               ];
                             },
                           ),
-                          SizedBox(height: 32,),
+                          SizedBox(height: 24,),
                           FloatingActionButton(
                             elevation: 0,
                             onPressed: () {
@@ -275,12 +288,12 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                           SizedBox(height: 32,),
                         ],
                       ),
-                      trailing: IconButton(
-                        onPressed: () {
-                          // Add your onPressed code here!
-                        },
-                        icon: const Icon(Icons.more_horiz_rounded),
-                      ),
+                      // trailing: IconButton(
+                      //   onPressed: () {
+                      //     // Add your onPressed code here!
+                      //   },
+                      //   icon: const Icon(Icons.more_horiz_rounded),
+                      // ),
                       destinations: const <NavigationRailDestination>[
                         NavigationRailDestination(
                           icon: Icon(Icons.watch_later_outlined),
@@ -308,7 +321,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                           if(olympicsState is DefaultOlympicsState){
                             return Expanded(
                               child: Container(
-                                padding: EdgeInsets.all(24),
+                                  padding: EdgeInsets.all(24),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -330,81 +343,109 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                             itemBuilder: (BuildContext context, int index){
                                               final olympics = olympicsState.olympics[index];
                                               return Container(
-                                                margin: EdgeInsets.only(right: 32),
-                                                child: InkWell(
-                                                  borderRadius: const BorderRadius.all(Radius.circular(12)),
-                                                  splashColor: Theme.of(context).colorScheme.primary,
-                                                  onTap: () {
-
-                                                  },
-                                                  child: Card(
-                                                    child: Container(
-                                                        width: 360,
-                                                        child: Column(
-                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                                          children: [
-                                                            Container(
-                                                              height: 220.0,
-                                                              width: 320.0,
-                                                              decoration: BoxDecoration(
-                                                                image: DecorationImage(
-                                                                  image: NetworkImage(olympics.image!),
-                                                                  fit: BoxFit.fill,
+                                                  margin: EdgeInsets.only(right: 32),
+                                                  child: InkWell(
+                                                    borderRadius: const BorderRadius.all(Radius.circular(12)),
+                                                    splashColor: Theme.of(context).colorScheme.primary,
+                                                    onTap: () {
+                                                      Navigator.pushNamed(context, '/editOlympics', arguments: olympics);
+                                                    },
+                                                    child: Card(
+                                                      child: Container(
+                                                          width: 360,
+                                                          child: Column(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                                            children: [
+                                                              Container(
+                                                                height: 220.0,
+                                                                width: 320.0,
+                                                                decoration: BoxDecoration(
+                                                                    image: DecorationImage(
+                                                                      image: NetworkImage(olympics.image!),
+                                                                      fit: BoxFit.cover,
+                                                                    ),
+                                                                    shape: BoxShape.rectangle,
+                                                                    borderRadius: BorderRadius.all(Radius.circular(8))
                                                                 ),
-                                                                shape: BoxShape.rectangle,
-                                                                borderRadius: BorderRadius.all(Radius.circular(8))
                                                               ),
-                                                            ),
-                                                            SizedBox(height: 24,),
-                                                            Text(
+                                                              SizedBox(height: 24,),
+                                                              Text(
                                                                 olympics.name!,
-                                                              style: TextStyle(
-                                                                fontWeight: FontWeight.w500,
-                                                                fontSize: 20
+                                                                style: TextStyle(
+                                                                    fontWeight: FontWeight.w500,
+                                                                    fontSize: 20
+                                                                ),
                                                               ),
-                                                            ),
-                                                            SizedBox(height: 16,),
-                                                            Row(
-                                                              mainAxisAlignment: MainAxisAlignment.center,
-                                                              children: [
-                                                                Icon(
-                                                                    Icons.start
-                                                                ),
-                                                                SizedBox(width: 8,),
-                                                                Text('Начало: ${olympics.getFormattedStartDate()}'),
-                                                              ],
-                                                            ),
-                                                            SizedBox(height: 4,),
-                                                            Row(
-                                                              mainAxisAlignment: MainAxisAlignment.center,
-                                                              children: [
-                                                                Icon(
-                                                                  Icons.block_flipped
-                                                                ),
-                                                                SizedBox(width: 8,),
-                                                                Text('Завершение: ${olympics.getFormattedEndDate()}')
-                                                              ],
-                                                            )
-                                                          ],
-                                                        )
+                                                              SizedBox(height: 16,),
+                                                              Row(
+                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                children: [
+                                                                  Icon(
+                                                                      Icons.start
+                                                                  ),
+                                                                  SizedBox(width: 8,),
+                                                                  Text('Начало: ${olympics.getFormattedStartDate()}'),
+                                                                ],
+                                                              ),
+                                                              SizedBox(height: 4,),
+                                                              Row(
+                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                children: [
+                                                                  Icon(
+                                                                      Icons.block_flipped
+                                                                  ),
+                                                                  SizedBox(width: 8,),
+                                                                  Text('Завершение: ${olympics.getFormattedEndDate()}')
+                                                                ],
+                                                              )
+                                                            ],
+                                                          )
+                                                      ),
                                                     ),
-                                                  ),
-                                                )
+                                                  )
                                               );
                                             }
                                         ),
-                                      )
+                                      ),
                                     ],
                                   )
                               ),
                             );
                           }
-                          return Expanded(
-                            child: Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          );
+                          else if(olympicsState is EmptyOlympicsState){
+                            return Expanded(
+                              child: Container(
+                                  padding: EdgeInsets.all(24),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        child: Text(
+                                          'Олимпиады',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 48
+                                          ),
+                                        ),
+                                        padding: EdgeInsets.all(12),
+                                      ),
+                                      Container(
+                                        child: Text('Мы не нашли для вас олимпиад :('),
+                                      ),
+                                      Divider(),
+                                    ],
+                                  )
+                              ),
+                            );
+                          }
+                          else{
+                            return Expanded(
+                              child: Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+                          }
                         },
                         listener: (context, olympicsState){
                           if(olympicsState is DefaultOlympicsState){
@@ -434,11 +475,11 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
               ),
             );
           }
-          if(state is GetUserProfileState || state is SetDatabaseState){
+          else if(state is LoadingState){
             return Scaffold(
-                body: Center(
-                  child: CircularProgressIndicator(),
-                )
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
             );
           }
           else if(state is ErrorHomeState){
@@ -483,9 +524,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
         listener: (context, state){
           if(state is LogoutState){
             Navigator.pop(context);
-          }
-          else if(state is SetDatabaseState){
-
           }
         });
   }

@@ -15,6 +15,10 @@ class DefaultOlympicsState extends OlympicsState{
 
 }
 
+class EmptyOlympicsState extends OlympicsState{
+
+}
+
 class ErrorOlympicsState extends OlympicsState{
 
 }

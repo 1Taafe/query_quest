@@ -6,6 +6,7 @@ class Olympics{
   String? startTime;
   String? endTime;
   String? databaseScript;
+  String? databaseName;
   String? image;
   DateTime? startDateTime;
   DateTime? endDateTime;
@@ -18,6 +19,7 @@ class Olympics{
       this.startTime,
       this.endTime,
       this.databaseScript,
+      this.databaseName,
       this.image
       ){
     startDateTime = DateTime.tryParse(startTime!);

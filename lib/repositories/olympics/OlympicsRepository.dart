@@ -9,6 +9,50 @@ class OlympicsRepository {
   final dio = Dio();
   final String url = 'http://localhost:3000';
 
+  Future<Map<String, dynamic>> createOlympics(String token, Olympics olympics) async {
+    try{
+      final response = await dio.post(
+          '$url/olympics/create',
+          options: Options(
+              headers:  {
+                "Authorization":"Bearer $token"
+              }
+          ),
+          data: {
+            'name': olympics.name,
+            'startTime': olympics.startTime,
+            'endTime': olympics.endTime,
+            'description': olympics.description,
+            'databaseScript': olympics.databaseScript,
+            'databaseName': olympics.databaseName,
+            'image': olympics.image,
+          }
+      );
+      if(response.statusCode == 200 || response.statusCode == 201){
+        Map<String, dynamic> status = Map<String, dynamic>();
+        status['status'] = 'Олимпиада успешно создана';
+        olympics.id = response.data['id'];
+        status['olympics'] = olympics;
+        return status;
+      }
+      else {
+        final parsedJson = jsonDecode(response.data);
+        throw AppException(parsedJson.toString());
+      }
+    }
+    catch(error){
+      if (error is DioException) {
+        if (error.response != null) {
+          throw AppException(error.response!.data['message'].toString());
+        } else {
+          throw AppException('Network error occurred'); // Handle network errors
+        }
+      } else {
+        throw AppException('An error occurred: $error'); // Handle other errors
+      }
+    }
+  }
+
   Future<List<Olympics>> getOlympics(String token, String path) async {
     try{
       final response = await dio.get(
@@ -30,6 +74,7 @@ class OlympicsRepository {
             dataElement['startTime'],
             dataElement['endTime'],
             dataElement['databaseScript'],
+            dataElement['databaseName'],
             dataElement['image']);
         olympics.add(olympicsElement);
       }

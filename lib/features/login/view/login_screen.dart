@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
-import 'package:query_quest/features/login/bloc/LoginEvent.dart';
-import 'package:query_quest/features/login/bloc/LoginState.dart';
-import '../../../features/home/home_feature.dart';
+import 'package:query_quest/global/auth/bloc/auth_event.dart';
 
-import '../../../repositories/models/Role.dart';
+import '../../../global/auth/bloc/auth_bloc.dart';
+import '../../../global/auth/bloc/auth_state.dart';
 import '../../../repositories/models/User.dart';
-import '../bloc/LoginBloc.dart';
+import '../../home/home_feature.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -23,9 +22,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocConsumer<LoginBloc, LoginState>(
+      body: BlocConsumer<AuthBloc, AuthState>(
         builder: (context, state){
-          if(state is TokenCheckingState){
+          if(state is AuthLoadingState){
             return Stack(
               children: [
                 Padding(
@@ -90,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             );
           }
-          else if(state is NeedToLoginState || state is ErrorLoginState){
+          else if(state is UnauthorizedState || state is UnauthorizedNotifyState || state is AuthorizedState || state is AuthorizedNotifyState){
             return Stack(
               children: [
                 Padding(
@@ -181,7 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         var user = User();
                                         user.email = emailController.text;
                                         user.password = passwordController.text;
-                                        BlocProvider.of<LoginBloc>(context).add(UserLoginEvent(user));
+                                        BlocProvider.of<AuthBloc>(context).add(LoginEvent(user));
                                       },
                                       child: Text('Войти')
                                   ),
@@ -208,71 +207,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             );
           }
-          else if(state is UserLoginState){
-            return Stack(
-              children: [
-                Padding(
-                    padding: EdgeInsets.all(24),
-                    child: Hero(
-                      tag: 'logo',
-                      child: Image.asset(
-                        'assets/images/bstu_logo.png',
-                        width: 120,
-                      ),
-                    )
-                ),
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(32),
-                        child: Lottie.asset(
-                            'assets/lottie/database2.json',
-                            width: 320
-                        ),
-                      ),
-                      VerticalDivider(
-                        indent: 180,
-                        endIndent: 180,
-                      ),
-                      Expanded(
-                          child: Container(
-                            padding: EdgeInsets.all(16),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'QueryQuest – олимпиады по базам данных',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 32,
-                                ),
-                                Text(
-                                  'Вход',
-                                  style: TextStyle(
-                                      fontSize: 32,
-                                      fontWeight: FontWeight.w600
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 32,
-                                ),
-                                CircularProgressIndicator(),
-                              ],
-                            ),
-                          )
-                      )
-                    ],
-                  ),
-                )
-              ],
-            );
-          }
           else{
             return Center(
               child: CircularProgressIndicator(),
@@ -280,7 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         },
         listener: (context, state){
-          if(state is SuccessfulLoginState){
+          if(state is AuthorizedNotifyState){
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 backgroundColor: Colors.green,
                 content: Row(
@@ -292,7 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     SizedBox(width: 16,),
                     Text(
-                        state.status['status']!,
+                        state.status,
                         style: TextStyle(
                             fontSize: 18
                         )
@@ -300,10 +234,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 )
             ));
-            BlocProvider.of<HomeBloc>(context).add(GetUserProfileEvent(state.status['access_token']!));
-            Navigator.pushNamed(context, '/home');
+            if(ModalRoute.of(context)?.settings.name == '/'){
+              Navigator.pushNamed(context, '/home');
+            }
+            BlocProvider.of<HomeBloc>(context).add(GetUserInfoEvent());
           }
-          else if(state is ErrorLoginState){
+          else if(state is UnauthorizedNotifyState){
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 backgroundColor: Colors.red,
                 content: Row(
@@ -323,29 +259,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 )
             ));
-          }
-          else if(state is NeedToReturnState){
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                backgroundColor: Colors.orange,
-                content: Row(
-                  children: [
-                    Icon(
-                      Icons.warning_amber,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                    SizedBox(width: 16,),
-                    Text(
-                        'Ваша сессия истекла, необходим повторный вход',
-                        style: TextStyle(
-                            fontSize: 18
-                        )
-                    ),
-                  ],
-                )
-            ));
-            Navigator.of(context)
-                .popUntil(ModalRoute.withName("/"));
           }
         },
       )

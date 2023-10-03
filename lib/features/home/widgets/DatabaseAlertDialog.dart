@@ -72,7 +72,7 @@ class _DatabaseAlertDialogState extends State<DatabaseAlertDialog> {
       actions: <Widget>[
         TextButton(
           onPressed: (){
-            context.read<HomeBloc>().add(SetDatabaseEvent(_selectedDatabase!, widget.user));
+            //context.read<HomeBloc>().add(SetDatabaseEvent(_selectedDatabase!, widget.user));
             Navigator.pop(context, 'OK');
           },
           child: const Text('OK'),

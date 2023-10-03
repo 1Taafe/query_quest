@@ -2,7 +2,7 @@ import '../../../../repositories/models/User.dart';
 
 abstract class HomeState{}
 
-class GetUserProfileState extends HomeState {
+class LoadingState extends HomeState {
 
 }
 
@@ -18,12 +18,6 @@ class DefaultState extends HomeState {
 class DefaultOrganizerState extends HomeState {
   final User currentUser;
   DefaultOrganizerState(this.currentUser);
-}
-
-class SetDatabaseState extends HomeState{
-  final String database;
-
-  SetDatabaseState(this.database);
 }
 
 class ErrorHomeState extends HomeState {

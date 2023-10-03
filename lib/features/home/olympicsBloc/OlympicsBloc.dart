@@ -21,7 +21,12 @@ class OlympicsBloc extends Bloc<OlympicsEvent, OlympicsState>{
       emitter(GetOlympicsState());
       final token = await sharedPrefs.getToken();
       final olympics = await olympicsRepository.getOlympics(token, event.path);
-      emitter(DefaultOlympicsState(olympics));
+      if(olympics.isEmpty){
+        emitter(EmptyOlympicsState());
+      }
+      else{
+        emitter(DefaultOlympicsState(olympics));
+      }
     }
     catch(error){
       //print(error);
