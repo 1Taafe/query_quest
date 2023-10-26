@@ -4,6 +4,7 @@ import 'package:query_quest/features/signup/bloc/SignupEvent.dart';
 import 'package:query_quest/features/signup/bloc/SignupState.dart';
 
 import '../../../repositories/models/User.dart';
+import '../../../shared_widgets/show_shack_bar.dart';
 import '../bloc/SignupBloc.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -233,47 +234,11 @@ class _SignupScreenState extends State<SignupScreen> {
         },
         listener: (context, state) {
           if(state is SuccessfulSignupState){
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.green,
-                content: Row(
-                  children: [
-                    Icon(
-                        Icons.check_circle_outline,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                    SizedBox(width: 16,),
-                    Text(
-                        state.successMessage,
-                      style: TextStyle(
-                        fontSize: 18
-                      )
-                    ),
-                  ],
-                )
-            ));
+            showStatusSnackbar(context, Colors.green, Icons.check_circle_outline, state.successMessage);
             Navigator.pop(context);
           }
           else if (state is ErrorSignupState){
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.red,
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                  SizedBox(width: 16,),
-                  Text(
-                    state.errorMessage,
-                    style: TextStyle(
-                      fontSize: 18
-                    ),
-                  ),
-                ],
-              )
-            ));
+            showStatusSnackbar(context, Colors.red, Icons.error_outline, state.errorMessage);
           }
         },
       ),

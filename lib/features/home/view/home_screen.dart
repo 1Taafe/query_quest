@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:query_quest/features/editOlympics/bloc/edit_olympics_bloc.dart';
+import 'package:query_quest/features/editOlympics/bloc/edit_olympics_event.dart';
 import 'package:query_quest/global/auth/bloc/auth_bloc.dart';
 import 'package:query_quest/global/auth/bloc/auth_state.dart';
 import '../../../repositories/models/Role.dart';
@@ -22,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     setState(() {
       _selectedIndex = 0;
-      BlocProvider.of<OlympicsBloc>(context).add(GetPlannedOlympicsEnvent());
+      BlocProvider.of<OlympicsBloc>(context).add(GetOlympicsEvent('planned'));
     });
     super.initState();
   }
@@ -195,13 +197,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         setState(() {
                           _selectedIndex = index;
                           if(index == 0){
-                            BlocProvider.of<OlympicsBloc>(context).add(GetPlannedOlympicsEnvent());
+                            BlocProvider.of<OlympicsBloc>(context).add(GetOlympicsEvent('planned'));
                           }
                           else if(index == 1){
-                            BlocProvider.of<OlympicsBloc>(context).add(GetCurrentOlympicsEnvent());
+                            BlocProvider.of<OlympicsBloc>(context).add(GetOlympicsEvent('current'));
                           }
                           else if(index == 2){
-                            BlocProvider.of<OlympicsBloc>(context).add(GetFinishedOlympicsEnvent());
+                            BlocProvider.of<OlympicsBloc>(context).add(GetOlympicsEvent('finished'));
                           }
                         });
                       },
@@ -281,7 +283,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           FloatingActionButton(
                             elevation: 0,
                             onPressed: () {
-                              Navigator.pushNamed(context, '/createOlympics');
+                              String path = "";
+                              if(_selectedIndex == 0){
+                                path = 'planned';
+                              }
+                              else if(_selectedIndex == 1){
+                                path = 'current';
+                              }
+                              else if(_selectedIndex == 2){
+                                path = 'finished';
+                              }
+                              Navigator.pushNamed(context, '/createOlympics', arguments: path);
                             },
                             child: const Icon(Icons.add),
                           ),
@@ -336,7 +348,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         padding: EdgeInsets.all(12),
                                       ),
                                       Container(
-                                        height: 400,
+                                        height: 420,
                                         child: ListView.builder(
                                             itemCount: olympicsState.olympics.length,
                                             scrollDirection: Axis.horizontal,
@@ -348,28 +360,43 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     borderRadius: const BorderRadius.all(Radius.circular(12)),
                                                     splashColor: Theme.of(context).colorScheme.primary,
                                                     onTap: () {
-                                                      Navigator.pushNamed(context, '/editOlympics', arguments: olympics);
+                                                       BlocProvider.of<EditOlympicsBloc>(context).add(LoadOlympicsEvent(olympics.id!, olympicsState.path));
+                                                       Navigator.pushNamed(context, '/editOlympics');
                                                     },
                                                     child: Card(
                                                       child: Container(
                                                           width: 360,
                                                           child: Column(
-                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            mainAxisAlignment: MainAxisAlignment.start,
                                                             crossAxisAlignment: CrossAxisAlignment.center,
                                                             children: [
+                                                              // Container(
+                                                              //   height: 220.0,
+                                                              //   width: 320.0,
+                                                              //   decoration: BoxDecoration(
+                                                              //       image: DecorationImage(
+                                                              //         image: NetworkImage(olympics.image!),
+                                                              //         fit: BoxFit.cover,
+                                                              //       ),
+                                                              //       shape: BoxShape.rectangle,
+                                                              //       borderRadius: BorderRadius.all(Radius.circular(8))
+                                                              //   ),
+                                                              // ),
                                                               Container(
-                                                                height: 220.0,
-                                                                width: 320.0,
-                                                                decoration: BoxDecoration(
-                                                                    image: DecorationImage(
-                                                                      image: NetworkImage(olympics.image!),
-                                                                      fit: BoxFit.cover,
-                                                                    ),
-                                                                    shape: BoxShape.rectangle,
-                                                                    borderRadius: BorderRadius.all(Radius.circular(8))
+                                                                height: 260.0,
+                                                                width: 360.0,
+                                                                child: Hero(
+                                                                  tag: olympics.id!,
+                                                                    child: ClipRRect(
+                                                                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                                                                      child: Image.network(
+                                                                        olympics.image!,
+                                                                        fit: BoxFit.cover,
+                                                                      ),
+                                                                    )
                                                                 ),
                                                               ),
-                                                              SizedBox(height: 24,),
+                                                              SizedBox(height: 20,),
                                                               Text(
                                                                 olympics.name!,
                                                                 style: TextStyle(
@@ -398,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   SizedBox(width: 8,),
                                                                   Text('Завершение: ${olympics.getFormattedEndDate()}')
                                                                 ],
-                                                              )
+                                                              ),
                                                             ],
                                                           )
                                                       ),

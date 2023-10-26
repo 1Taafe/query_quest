@@ -1,3 +1,5 @@
+import 'User.dart';
+
 class Olympics{
   int? id;
   int? creatorId;
@@ -10,6 +12,7 @@ class Olympics{
   String? image;
   DateTime? startDateTime;
   DateTime? endDateTime;
+  User? creator;
 
   Olympics(
       this.id,

@@ -11,9 +11,7 @@ class OlympicsBloc extends Bloc<OlympicsEvent, OlympicsState>{
   final SharedPrefs sharedPrefs;
 
   OlympicsBloc(this.olympicsRepository, this.sharedPrefs) : super(GetOlympicsState()){
-    on<GetPlannedOlympicsEnvent>(_getOlympicsHandler);
-    on<GetCurrentOlympicsEnvent>(_getOlympicsHandler);
-    on<GetFinishedOlympicsEnvent>(_getOlympicsHandler);
+    on<GetOlympicsEvent>(_getOlympicsHandler);
   }
 
   Future<void> _getOlympicsHandler(OlympicsEvent event, Emitter<OlympicsState> emitter) async {
@@ -25,11 +23,11 @@ class OlympicsBloc extends Bloc<OlympicsEvent, OlympicsState>{
         emitter(EmptyOlympicsState());
       }
       else{
-        emitter(DefaultOlympicsState(olympics));
+        emitter(DefaultOlympicsState(olympics, event.path));
       }
     }
     catch(error){
-      //print(error);
+      print(error);
       emitter(ErrorOlympicsState());
     }
   }

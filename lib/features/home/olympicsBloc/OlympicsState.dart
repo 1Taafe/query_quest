@@ -10,8 +10,9 @@ class GetOlympicsState extends OlympicsState{
 
 class DefaultOlympicsState extends OlympicsState{
   final List<Olympics> olympics;
+  final String path;
 
-  DefaultOlympicsState(this.olympics);
+  DefaultOlympicsState(this.olympics, this.path);
 
 }
 

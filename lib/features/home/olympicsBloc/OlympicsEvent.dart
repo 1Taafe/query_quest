@@ -2,14 +2,8 @@ abstract class OlympicsEvent{
   late String path;
 }
 
-class GetPlannedOlympicsEnvent extends OlympicsEvent{
-  String path = 'planned';
-}
+class GetOlympicsEvent extends OlympicsEvent{
+  final String path;
 
-class GetCurrentOlympicsEnvent extends OlympicsEvent{
-  String path = 'current';
-}
-
-class GetFinishedOlympicsEnvent extends OlympicsEvent{
-  String path = 'finished';
+  GetOlympicsEvent(this.path);
 }

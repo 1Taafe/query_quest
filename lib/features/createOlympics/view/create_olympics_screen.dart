@@ -2,7 +2,10 @@ import 'dart:html';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:query_quest/features/home/home_feature.dart';
 import 'package:query_quest/repositories/models/Olympics.dart';
+import '../../../shared_widgets/show_shack_bar.dart';
+import '../../home/olympicsBloc/OlympicsBloc.dart';
 import '../create_olympics_feature.dart';
 
 class CreateOlympicsScreen extends StatefulWidget {
@@ -31,6 +34,9 @@ class _CreateOlympicsScreenState extends State<CreateOlympicsScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final olympicsCurrentPath = ModalRoute.of(context)!.settings.arguments as String;
+
     return BlocConsumer<CreateOlympicsBloc, CreateOlympicsState>(
         builder: (context, state){
           if(state is DefaultCreateOlympicsState || state is SuccessfulOlympicsState){
@@ -320,46 +326,12 @@ class _CreateOlympicsScreenState extends State<CreateOlympicsScreen> {
         },
         listener: (context, state){
           if(state is SuccessfulOlympicsState){
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                backgroundColor: Colors.green,
-                content: Row(
-                  children: [
-                    Icon(
-                      Icons.check_circle_outline,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                    SizedBox(width: 16,),
-                    Text(
-                        state.status,
-                        style: TextStyle(
-                            fontSize: 18
-                        )
-                    ),
-                  ],
-                )
-            ));
+            context.read<OlympicsBloc>().add(GetOlympicsEvent(olympicsCurrentPath));
+            showStatusSnackbar(context, Colors.green, Icons.check_circle_outline, state.status);
+            Navigator.of(context).pop();
           }
           else if(state is ErrorCreateOlympicsState){
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                backgroundColor: Colors.red,
-                content: Row(
-                  children: [
-                    Icon(
-                      Icons.error_outline,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                    SizedBox(width: 16,),
-                    Text(
-                        state.status,
-                        style: TextStyle(
-                            fontSize: 18
-                        )
-                    ),
-                  ],
-                )
-            ));
+            showStatusSnackbar(context, Colors.red, Icons.error_outline, state.status);
           }
         });
   }

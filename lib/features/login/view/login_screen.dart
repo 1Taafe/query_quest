@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:query_quest/global/auth/bloc/auth_event.dart';
+import 'package:query_quest/shared_widgets/show_shack_bar.dart';
 
 import '../../../global/auth/bloc/auth_bloc.dart';
 import '../../../global/auth/bloc/auth_state.dart';
@@ -215,50 +216,14 @@ class _LoginScreenState extends State<LoginScreen> {
         },
         listener: (context, state){
           if(state is AuthorizedNotifyState){
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                backgroundColor: Colors.green,
-                content: Row(
-                  children: [
-                    Icon(
-                      Icons.check_circle_outline,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                    SizedBox(width: 16,),
-                    Text(
-                        state.status,
-                        style: TextStyle(
-                            fontSize: 18
-                        )
-                    ),
-                  ],
-                )
-            ));
+            showStatusSnackbar(context, Colors.green, Icons.check_circle_outline, state.status);
             if(ModalRoute.of(context)?.settings.name == '/'){
               Navigator.pushNamed(context, '/home');
+              BlocProvider.of<HomeBloc>(context).add(GetUserInfoEvent());
             }
-            BlocProvider.of<HomeBloc>(context).add(GetUserInfoEvent());
           }
           else if(state is UnauthorizedNotifyState){
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                backgroundColor: Colors.red,
-                content: Row(
-                  children: [
-                    Icon(
-                      Icons.error_outline,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                    SizedBox(width: 16,),
-                    Text(
-                        state.status,
-                        style: TextStyle(
-                            fontSize: 18
-                        )
-                    ),
-                  ],
-                )
-            ));
+            showStatusSnackbar(context, Colors.red, Icons.error_outline, state.status);
           }
         },
       )
