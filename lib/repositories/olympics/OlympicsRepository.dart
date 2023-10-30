@@ -11,6 +11,41 @@ class OlympicsRepository {
   final dio = Dio();
   final String url = 'http://localhost:3000';
 
+  Future<Map<String, dynamic>> deleteTask(String token, int taskId) async {
+    try{
+      final response = await dio.delete(
+          '$url/olympics/task/$taskId',
+          options: Options(
+              headers:  {
+                "Authorization":"Bearer $token"
+              }
+          )
+      );
+      if(response.statusCode == 200 || response.statusCode == 201){
+        Map<String, dynamic> status = Map<String, dynamic>();
+        status['message'] = response.data['message'];
+        return status;
+      }
+      else {
+        final parsedJson = jsonDecode(response.data);
+        throw AppException(parsedJson.toString());
+      }
+    }
+    catch(error){
+      if (error is DioException) {
+        if (error.response != null) {
+          throw AppException(error.response!.data['message'].toString());
+        }
+        else {
+          throw AppException('Network error occurred'); // Handle network errors
+        }
+      }
+      else {
+        throw AppException('An error occurred: $error'); // Handle other errors
+      }
+    }
+  }
+
   Future<Map<String, dynamic>> createTask(String token, Task task) async {
     try{
       final response = await dio.post(
@@ -28,7 +63,7 @@ class OlympicsRepository {
       );
       if(response.statusCode == 200 || response.statusCode == 201){
         Map<String, dynamic> status = Map<String, dynamic>();
-        status['status'] = response.data['message'];
+        status['message'] = response.data['message'];
         return status;
       }
       else {
@@ -40,10 +75,12 @@ class OlympicsRepository {
       if (error is DioException) {
         if (error.response != null) {
           throw AppException(error.response!.data['message'].toString());
-        } else {
+        }
+        else {
           throw AppException('Network error occurred'); // Handle network errors
         }
-      } else {
+      }
+      else {
         throw AppException('An error occurred: $error'); // Handle other errors
       }
     }
@@ -240,38 +277,5 @@ class OlympicsRepository {
       }
     }
   }
-
-  // Future<User> getUserProfile(String token) async {
-  //   try{
-  //     final response = await dio.get(
-  //         '$url/auth/profile',
-  //         options: Options(
-  //             headers:  {
-  //               "Authorization":"Bearer $token"
-  //             }
-  //         )
-  //     );
-  //     User user = User();
-  //     user.email = response.data['email'];
-  //     user.course = response.data['course'];
-  //     user.group = response.data['group'];
-  //     user.surname = response.data['surname'];
-  //     user.name = response.data['name'];
-  //     user.phone = response.data['phone'];
-  //     user.role = response.data['role'];
-  //     return user;
-  //   }
-  //   catch(error){
-  //     if (error is DioException) {
-  //       if (error.response != null) {
-  //         throw AppException(error.response!.data['message'].toString());
-  //       } else {
-  //         throw AppException('Network error occurred'); // Handle network errors
-  //       }
-  //     } else {
-  //       throw AppException('An error occurred: $error'); // Handle other errors
-  //     }
-  //   }
-  // }
 
 }

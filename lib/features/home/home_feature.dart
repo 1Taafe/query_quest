@@ -6,3 +6,5 @@ export 'olympicsBloc/OlympicsBloc.dart';
 export 'olympicsBloc/OlympicsEvent.dart';
 export 'olympicsBloc/OlympicsState.dart';
 export 'widgets/DatabaseAlertDialog.dart';
+export 'widgets/organizer_view.dart';
+export 'widgets/user_view.dart';

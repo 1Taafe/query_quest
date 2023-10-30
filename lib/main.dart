@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:query_quest/features/editOlympics/edit_olympics_feature.dart';
 import 'package:query_quest/global/auth/bloc/auth_event.dart';
+import 'package:query_quest/global/auth/view/not_found_screen.dart';
 
 import 'features/home/home_feature.dart';
 import 'features/login/login_feature.dart';
@@ -53,33 +54,30 @@ class QueryQuestApp extends StatelessWidget {
         useMaterial3: true,
       ),
       initialRoute: '/',
+      // onGenerateRoute: (settings) {
+      //   if (settings.name == "/home") {
+      //     return PageRouteBuilder(
+      //         settings: settings, // Pass this to make popUntil(), pushNamedAndRemoveUntil(), works
+      //         pageBuilder: (_, __, ___) => HomeScreen(),
+      //         transitionsBuilder: (_, a, __, c) => FadeTransition(opacity: a, child: c)
+      //     );
+      //   }
+      //   // Unknown route
+      //   return MaterialPageRoute(builder: (_) => NotFoundScreen());
+      // },
       routes: {
         '/': (context) => LoginScreen(),
         '/signup': (context) => SignupScreen(),
-        '/home': (context) => BlocListener<AuthBloc, AuthState>(
-          listener: (context, state) {
-            if (state is UnauthorizedState) {
-              Navigator.of(context).pushReplacementNamed('/');
-            }
-          },
-          child: HomeScreen(),
-        ),
-        '/createOlympics': (context) => BlocListener<AuthBloc, AuthState>(
-          listener: (context, state) {
-            if (state is UnauthorizedState) {
-              Navigator.of(context).pushReplacementNamed('/');
-            }
-          },
-          child: CreateOlympicsScreen(),
-        ),
-        '/editOlympics': (context) => BlocListener<AuthBloc, AuthState>(
-          listener: (context, state) {
-            if (state is UnauthorizedState) {
-              Navigator.of(context).pushReplacementNamed('/');
-            }
-          },
-          child: EditOlympicsScreen(),
-        ),
+        '/home': (context) => context.read<AuthBloc>().state is AuthorizedState ? HomeScreen() : LoginScreen(),
+        '/createOlympics': (context) => context.read<AuthBloc>().state is AuthorizedState ? CreateOlympicsScreen() : LoginScreen(),
+        '/editOlympics': (context){
+          if(context.read<AuthBloc>().state is AuthorizedState && context.read<EditOlympicsBloc>().state is! EditOlympicsEmptyState){
+            return EditOlympicsScreen();
+          }
+          else{
+            return NotFoundScreen();
+          }
+        },
       },
     );
   }

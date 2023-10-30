@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:query_quest/features/createOlympics/bloc/create_olympics_state.dart';
 import 'package:query_quest/features/home/home_feature.dart';
+import '../../../repositories/models/Task.dart';
 import '../../../shared_widgets/show_shack_bar.dart';
 import '../edit_olympics_feature.dart';
-
-import '../../../repositories/models/Olympics.dart';
 
 class EditOlympicsScreen extends StatefulWidget {
   const EditOlympicsScreen({super.key});
@@ -31,6 +29,31 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                 foregroundColor: Theme.of(context).colorScheme.onInverseSurface,
                 title: Text(state.olympics.name!),
                 actions: [
+                  ElevatedButton.icon(
+                    onPressed: (){
+                      showGeneralDialog(
+                        context: context,
+                        pageBuilder: (context, animation, secondaryAnimation) => Scaffold(
+                            backgroundColor: Colors.black87,
+                            body: Scaffold(
+                              appBar: AppBar(
+                                title: Text('Скрипт создания базы данных'),
+                              ),
+                              body: Center(
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(vertical: 16),
+                                  width: 1000,
+                                  child: SelectableText(state.olympics.databaseScript!),
+                                ),
+                              )
+                            )
+                        ),
+                      );
+                    },
+                    label: Text('Схема БД'),
+                    icon: Icon(Icons.schema_outlined),
+                  ),
+                  SizedBox(width: 12,),
                   ElevatedButton.icon(
                     onPressed: () => showDialog<String>(
                         context: context,
@@ -60,7 +83,7 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                                   child: TextButton.icon(
                                     onPressed: (){
                                       Navigator.pop(context);
-                                      context.read<EditOlympicsBloc>().add(DeleteOlympicsEvent(state.olympics, state.olympicsPath));
+                                      context.read<EditOlympicsBloc>().add(DeleteOlympicsEvent(state.olympics, state.olympicsPath, state.tasks));
                                     },
                                     icon: Icon(Icons.delete_outline, color: Colors.redAccent,),
                                     label: Text('Удалить', style: TextStyle(color: Colors.redAccent),),
@@ -138,6 +161,9 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
+                                    "Организатор: ${state.olympics.creator?.name} ${state.olympics.creator?.surname}",
+                                  ),
+                                  Text(
                                     'Описание',
                                     style: TextStyle(
                                         fontWeight: FontWeight.w500,
@@ -153,7 +179,7 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                       SizedBox(height: 48,),
                       Container(
                         child: Text(
-                          'Задания',
+                          'Задания (${state.tasks.length})',
                           style: TextStyle(
                             fontSize: 48,
                             fontWeight: FontWeight.w600
@@ -168,7 +194,9 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                             Container(
                               width: MediaQuery.of(context).size.width / 2 - 80,
                               child: TextField(
+                                maxLines: null,
                                 decoration: InputDecoration(
+                                  label: Text('Новое задание'),
                                   border: OutlineInputBorder(),
                                 ),
                                 controller: newTitleController,
@@ -177,7 +205,9 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                             Container(
                               width: MediaQuery.of(context).size.width / 2 - 80,
                               child: TextField(
+                                maxLines: null,
                                 decoration: InputDecoration(
+                                  label: Text('Ответ на задание'),
                                   border: OutlineInputBorder(),
                                 ),
                                 controller: newSolutionController,
@@ -185,14 +215,29 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                             ),
                             IconButton(
                                 onPressed: (){
-
+                                  final task = Task();
+                                  task.olympicsId = state.olympics.id;
+                                  task.title = newTitleController.text;
+                                  task.solution = newSolutionController.text;
+                                  context.read<EditOlympicsBloc>().add(CreateTaskEvent(state.olympicsPath, task, state.tasks, state.olympics));
                                 },
                                 icon: Icon(Icons.add)
                             ),
-                            SizedBox(width: 40,)
+                            IconButton(
+                                onPressed: (){
+                                  newTitleController.text = "";
+                                  newSolutionController.text = "";
+                                },
+                                icon: Icon(Icons.cleaning_services_outlined)
+                            ),
                           ],
                         ),
                       ),
+                      SizedBox(height: 24,),
+                      Divider(
+                        thickness: 1,
+                      ),
+                      SizedBox(height: 8,),
                       Container(
                         child: ListView.builder(
                             itemCount: state.tasks.length,
@@ -212,6 +257,7 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                                     Container(
                                       width: MediaQuery.of(context).size.width / 2 - 80,
                                       child: TextField(
+                                        maxLines: null,
                                         decoration: InputDecoration(
                                           border: OutlineInputBorder(),
                                         ),
@@ -221,6 +267,7 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                                     Container(
                                       width: MediaQuery.of(context).size.width / 2 - 80,
                                       child: TextField(
+                                        maxLines: null,
                                         decoration: InputDecoration(
                                           border: OutlineInputBorder(),
                                         ),
@@ -234,9 +281,78 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                                         icon: Icon(Icons.save_as_outlined)
                                     ),
                                     IconButton(
-                                        onPressed: (){
-
-                                        },
+                                        onPressed: () => showDialog<String>(
+                                          context: context,
+                                          builder: (BuildContext context) => AlertDialog(
+                                              contentPadding: EdgeInsets.all(0),
+                                              title: Text('Подтверждение действия'),
+                                              content: Container(
+                                                height: 220,
+                                                width: 340,
+                                                child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.end,
+                                                  children: [
+                                                    Container(
+                                                      padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+                                                      child: Text('Вы действительно хотите удалить задание?'),
+                                                    ),
+                                                    Container(
+                                                      padding: EdgeInsets.fromLTRB(16, 4, 16, 16),
+                                                      child: Text(task.title!, maxLines: 1, overflow: TextOverflow.ellipsis,),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 8,
+                                                    ),
+                                                    Container(
+                                                      height: 0.5,
+                                                      color: Theme.of(context).colorScheme.onSurface.withAlpha(128),
+                                                    ),
+                                                    Container(
+                                                      width: double.infinity,
+                                                      height: 56,
+                                                      child: TextButton.icon(
+                                                        onPressed: (){
+                                                          Navigator.of(context).pop();
+                                                          context.read<EditOlympicsBloc>().add(DeleteTaskEvent(state.olympicsPath, task, state.tasks, state.olympics));
+                                                        },
+                                                        icon: Icon(Icons.delete_outline, color: Colors.redAccent,),
+                                                        label: Text('Удалить', style: TextStyle(color: Colors.redAccent),),
+                                                        style: ButtonStyle(
+                                                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                                                RoundedRectangleBorder(
+                                                                  borderRadius: BorderRadius.circular(0.0),
+                                                                )
+                                                            )
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      height: 0.5,
+                                                      color: Theme.of(context).colorScheme.onSurface.withAlpha(128),
+                                                    ),
+                                                    Container(
+                                                      width: double.infinity,
+                                                      height: 56,
+                                                      child: TextButton.icon(
+                                                        onPressed: (){
+                                                          Navigator.pop(context);
+                                                        },
+                                                        icon: Icon(Icons.close_outlined),
+                                                        label: Text('Оставить'),
+                                                        style: ButtonStyle(
+                                                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                                                RoundedRectangleBorder(
+                                                                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+                                                                )
+                                                            )
+                                                        ),
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              )
+                                          ),
+                                        ),
                                         icon: Icon(Icons.delete_outline)
                                     ),
                                   ],
@@ -244,7 +360,8 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                               );
                             }
                         ),
-                      )
+                      ),
+                      SizedBox(height: 64,),
                     ],
                   ),
                 ),
@@ -279,7 +396,9 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
         listener: (context, state){
           if(state is EditOlympicsSuccessfulState){
             showStatusSnackbar(context, Colors.green, Icons.check_circle_outline, state.message);
-            Navigator.pop(context);
+            if(state.needToReturn){
+              Navigator.pop(context);
+            }
             context.read<OlympicsBloc>().add(GetOlympicsEvent(state.olympicsPath));
           }
           else if(state is EditOlympicsErrorState){

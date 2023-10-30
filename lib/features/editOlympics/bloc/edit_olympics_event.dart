@@ -14,13 +14,24 @@ class LoadOlympicsEvent extends EditOlympicsEvent{
 
 class CreateTaskEvent extends EditOlympicsEvent{
   final String olympicsPath;
+  final Olympics olympics;
   final Task task;
-  CreateTaskEvent(this.olympicsPath, this.task);
+  final List<Task> tasks;
+  CreateTaskEvent(this.olympicsPath, this.task, this.tasks, this.olympics);
+}
+
+class DeleteTaskEvent extends EditOlympicsEvent{
+  final String olympicsPath;
+  final Olympics olympics;
+  final Task task;
+  final List<Task> tasks;
+  DeleteTaskEvent(this.olympicsPath, this.task, this.tasks, this.olympics);
 }
 
 class DeleteOlympicsEvent extends EditOlympicsEvent{
   final Olympics olympics;
   final String olympicsPath;
-  DeleteOlympicsEvent(this.olympics, this.olympicsPath);
+  final List<Task> tasks;
+  DeleteOlympicsEvent(this.olympics, this.olympicsPath, this.tasks);
 }
 
