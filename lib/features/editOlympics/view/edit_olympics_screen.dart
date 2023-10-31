@@ -276,7 +276,9 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                                     ),
                                     IconButton(
                                         onPressed: (){
-
+                                          task.title = titleController.text;
+                                          task.solution = solutionController.text;
+                                          context.read<EditOlympicsBloc>().add(UpdateTaskEvent(state.olympicsPath, state.olympics, state.tasks, task));
                                         },
                                         icon: Icon(Icons.save_as_outlined)
                                     ),

@@ -13,6 +13,24 @@ class EditOlympicsBloc extends Bloc<EditOlympicsEvent, EditOlympicsState>{
     on<LoadOlympicsEvent>(_loadOlympicsHandler);
     on<CreateTaskEvent>(_createTaskHandler);
     on<DeleteTaskEvent>(_deleteTaskHandler);
+    on<UpdateTaskEvent>(_updateTaskHandler);
+  }
+
+  Future<void> _updateTaskHandler(UpdateTaskEvent event, Emitter<EditOlympicsState> emitter) async {
+    try{
+      emitter(EditOlympicsLoadingState('Изменение задания'));
+      final token = await sharedPrefs.getToken();
+      final status = await olympicsRepository.updateTask(token, event.task);
+      final olympics = await olympicsRepository.getOlympicsById(token, event.task.olympicsId!);
+      final tasks = await olympicsRepository.getOlympicsTasks(token, event.task.olympicsId!);
+      emitter(EditOlympicsSuccessfulState(status['message'], event.olympicsPath, false));
+      emitter(EditOlympicsDefaultState(olympics, event.olympicsPath, tasks));
+    }
+    catch(error){
+      print(error);
+      emitter(EditOlympicsErrorState(error.toString()));
+      emitter(EditOlympicsDefaultState(event.olympics, event.olympicsPath, event.tasks));
+    }
   }
 
   Future<void> _deleteTaskHandler(DeleteTaskEvent event, Emitter<EditOlympicsState> emitter) async {

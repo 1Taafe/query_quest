@@ -11,6 +11,43 @@ class OlympicsRepository {
   final dio = Dio();
   final String url = 'http://localhost:3000';
 
+  Future<Map<String, dynamic>> updateTask(String token, Task task) async {
+    try{
+      final response = await dio.put(
+          '$url/olympics/task/${task.id}',
+          options: Options(
+              headers:  {
+                "Authorization":"Bearer $token"
+              }
+          ),
+          data: {
+            'title': task.title,
+            'solution': task.solution,
+          }
+      );
+      if(response.statusCode == 200 || response.statusCode == 201){
+        Map<String, dynamic> status = Map<String, dynamic>();
+        status['message'] = response.data['message'];
+        return status;
+      }
+      else {
+        final parsedJson = jsonDecode(response.data);
+        throw AppException(parsedJson.toString());
+      }
+    }
+    catch(error){
+      if (error is DioException) {
+        if (error.response != null) {
+          throw AppException(error.response!.data['message'].toString());
+        } else {
+          throw AppException('Network error occurred'); // Handle network errors
+        }
+      } else {
+        throw AppException('An error occurred: $error'); // Handle other errors
+      }
+    }
+  }
+
   Future<Map<String, dynamic>> deleteTask(String token, int taskId) async {
     try{
       final response = await dio.delete(

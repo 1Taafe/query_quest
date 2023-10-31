@@ -20,6 +20,14 @@ class CreateTaskEvent extends EditOlympicsEvent{
   CreateTaskEvent(this.olympicsPath, this.task, this.tasks, this.olympics);
 }
 
+class UpdateTaskEvent extends EditOlympicsEvent{
+  final String olympicsPath;
+  final Olympics olympics;
+  final Task task;
+  final List<Task> tasks;
+  UpdateTaskEvent(this.olympicsPath, this.olympics, this.tasks, this.task);
+}
+
 class DeleteTaskEvent extends EditOlympicsEvent{
   final String olympicsPath;
   final Olympics olympics;
