@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:query_quest/features/home/home_feature.dart';
 import 'package:query_quest/repositories/models/Olympics.dart';
 import '../../../shared_widgets/show_shack_bar.dart';
-import '../../home/olympicsBloc/OlympicsBloc.dart';
+import '../../home/olympicsBloc/home_olympics_bloc.dart';
 import '../create_olympics_feature.dart';
 
 class CreateOlympicsScreen extends StatefulWidget {
@@ -326,7 +326,7 @@ class _CreateOlympicsScreenState extends State<CreateOlympicsScreen> {
         },
         listener: (context, state){
           if(state is SuccessfulOlympicsState){
-            context.read<OlympicsBloc>().add(GetOlympicsEvent(olympicsCurrentPath));
+            context.read<HomeOlympicsBloc>().add(GetOlympicsEvent(olympicsCurrentPath));
             showStatusSnackbar(context, Colors.green, Icons.check_circle_outline, state.status);
             Navigator.of(context).pop();
           }

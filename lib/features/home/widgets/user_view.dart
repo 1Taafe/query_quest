@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../repositories/models/Role.dart';
 import '../../editOlympics/edit_olympics_feature.dart';
+import '../../olympics/olympics_feature.dart';
 import '../home_feature.dart';
 
 class UserView extends StatefulWidget {
@@ -21,7 +22,7 @@ class _UserViewState extends State<UserView> {
   void initState() {
     setState(() {
       _selectedIndex = 1;
-      BlocProvider.of<OlympicsBloc>(context).add(GetOlympicsEvent('current'));
+      BlocProvider.of<HomeOlympicsBloc>(context).add(GetOlympicsEvent('current'));
     });
     super.initState();
   }
@@ -40,13 +41,13 @@ class _UserViewState extends State<UserView> {
                 setState(() {
                   _selectedIndex = index;
                   if(index == 0){
-                    BlocProvider.of<OlympicsBloc>(context).add(GetOlympicsEvent('planned'));
+                    BlocProvider.of<HomeOlympicsBloc>(context).add(GetOlympicsEvent('planned'));
                   }
                   else if(index == 1){
-                    BlocProvider.of<OlympicsBloc>(context).add(GetOlympicsEvent('current'));
+                    BlocProvider.of<HomeOlympicsBloc>(context).add(GetOlympicsEvent('current'));
                   }
                   else if(index == 2){
-                    BlocProvider.of<OlympicsBloc>(context).add(GetOlympicsEvent('finished'));
+                    BlocProvider.of<HomeOlympicsBloc>(context).add(GetOlympicsEvent('finished'));
                   }
                 });
               },
@@ -153,7 +154,7 @@ class _UserViewState extends State<UserView> {
             ),
             const VerticalDivider(thickness: 1, width: 1),
             // This is the main content.
-            BlocConsumer<OlympicsBloc, OlympicsState>(
+            BlocConsumer<HomeOlympicsBloc, HomeOlympicsState>(
                 builder: (context, olympicsState){
                   if(olympicsState is DefaultOlympicsState){
                     return Expanded(
@@ -185,8 +186,10 @@ class _UserViewState extends State<UserView> {
                                             borderRadius: const BorderRadius.all(Radius.circular(12)),
                                             splashColor: Theme.of(context).colorScheme.primary,
                                             onTap: () {
-                                              BlocProvider.of<EditOlympicsBloc>(context).add(LoadOlympicsEvent(olympics.id!, olympicsState.path));
-                                              Navigator.pushNamed(context, '/editOlympics');
+                                              // BlocProvider.of<EditOlympicsBloc>(context).add(LoadOlympicsEvent(olympics.id!, olympicsState.path));
+                                              // Navigator.pushNamed(context, '/editOlympics');
+                                              context.read<OlympicsBloc>().add(OlympicsLoadEvent(olympics.id!));
+                                              Navigator.of(context).pushNamed('/olympics');
                                             },
                                             child: Card(
                                               child: Container(

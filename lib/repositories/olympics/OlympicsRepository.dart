@@ -158,6 +158,26 @@ class OlympicsRepository {
     }
   }
 
+  Future<String> getServerTime() async {
+    try{
+      final response = await dio.get(
+          '$url/olympics/currentTime',
+      );
+      return response.data!;
+    }
+    catch(error){
+      if (error is DioException) {
+        if (error.response != null) {
+          throw AppException(error.response!.data['message'].toString());
+        } else {
+          throw AppException('Network error occurred'); // Handle network errors
+        }
+      } else {
+        throw AppException('An error occurred: $error'); // Handle other errors
+      }
+    }
+  }
+
   Future<Olympics> getOlympicsById(String token, int olympicsId) async {
     try{
       final response = await dio.get(
@@ -179,6 +199,7 @@ class OlympicsRepository {
           response.data['databaseScript'],
           response.data['databaseName'],
           response.data['image']);
+      olympics.isAccessed = response.data['isAccessed'];
       olympics.creator = User();
       olympics.creator?.email = response.data['creator']['email'];
       olympics.creator?.surname = response.data['creator']['surname'];

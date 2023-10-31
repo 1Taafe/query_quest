@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:query_quest/features/editOlympics/edit_olympics_feature.dart';
-import 'package:query_quest/global/auth/bloc/auth_event.dart';
-import 'package:query_quest/global/auth/view/not_found_screen.dart';
+import 'package:query_quest/features/olympics/view/olympics_screen.dart';
 
+import 'features/editOlympics/edit_olympics_feature.dart';
 import 'features/home/home_feature.dart';
 import 'features/login/login_feature.dart';
 import 'features/signup/signup_feature.dart';
 import 'features/createOlympics/create_olympics_feature.dart';
+import 'global/auth/auth_feature.dart';
+import 'features/olympics/olympics_feature.dart';
 
-import 'global/auth/bloc/auth_bloc.dart';
-import 'global/auth/bloc/auth_state.dart';
 import 'repositories/olympics/OlympicsRepository.dart';
 import 'repositories/shared_prefs/shared_preferences.dart';
 import 'repositories/auth/AuthRepository.dart';
@@ -23,9 +22,10 @@ void main() {
       BlocProvider<AuthBloc>(create: (_) => AuthBloc()..add((TokenEvent()))),
       BlocProvider<SignupBloc>(create: (_) => SignupBloc(AuthRepository())),
       BlocProvider<HomeBloc>(create: (_) => HomeBloc()),
-      BlocProvider<OlympicsBloc>(create: (_) => OlympicsBloc(OlympicsRepository(), SharedPrefs())),
+      BlocProvider<HomeOlympicsBloc>(create: (_) => HomeOlympicsBloc(OlympicsRepository(), SharedPrefs())),
       BlocProvider<CreateOlympicsBloc>(create: (_) => CreateOlympicsBloc(OlympicsRepository(), SharedPrefs())),
       BlocProvider<EditOlympicsBloc>(create: (_) => EditOlympicsBloc()),
+      BlocProvider<OlympicsBloc>(create: (_) => OlympicsBloc()),
     ],
     child: QueryQuestApp(),
   ));
@@ -73,6 +73,14 @@ class QueryQuestApp extends StatelessWidget {
         '/editOlympics': (context){
           if(context.read<AuthBloc>().state is AuthorizedState && context.read<EditOlympicsBloc>().state is! EditOlympicsEmptyState){
             return EditOlympicsScreen();
+          }
+          else{
+            return NotFoundScreen();
+          }
+        },
+        '/olympics': (context){
+          if(context.read<AuthBloc>().state is AuthorizedState && context.read<OlympicsBloc>().state is! OlympicsEmptyState){
+            return OlympicsScreen();
           }
           else{
             return NotFoundScreen();

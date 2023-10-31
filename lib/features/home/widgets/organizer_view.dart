@@ -21,7 +21,7 @@ class _OrganizerViewState extends State<OrganizerView> {
   void initState() {
     setState(() {
       _selectedIndex = 1;
-      BlocProvider.of<OlympicsBloc>(context).add(GetOlympicsEvent('current'));
+      BlocProvider.of<HomeOlympicsBloc>(context).add(GetOlympicsEvent('current'));
     });
     super.initState();
   }
@@ -40,13 +40,13 @@ class _OrganizerViewState extends State<OrganizerView> {
                 setState(() {
                   _selectedIndex = index;
                   if(index == 0){
-                    BlocProvider.of<OlympicsBloc>(context).add(GetOlympicsEvent('planned'));
+                    BlocProvider.of<HomeOlympicsBloc>(context).add(GetOlympicsEvent('planned'));
                   }
                   else if(index == 1){
-                    BlocProvider.of<OlympicsBloc>(context).add(GetOlympicsEvent('current'));
+                    BlocProvider.of<HomeOlympicsBloc>(context).add(GetOlympicsEvent('current'));
                   }
                   else if(index == 2){
-                    BlocProvider.of<OlympicsBloc>(context).add(GetOlympicsEvent('finished'));
+                    BlocProvider.of<HomeOlympicsBloc>(context).add(GetOlympicsEvent('finished'));
                   }
                 });
               },
@@ -171,7 +171,7 @@ class _OrganizerViewState extends State<OrganizerView> {
             ),
             const VerticalDivider(thickness: 1, width: 1),
             // This is the main content.
-            BlocConsumer<OlympicsBloc, OlympicsState>(
+            BlocConsumer<HomeOlympicsBloc, HomeOlympicsState>(
                 builder: (context, olympicsState){
                   if(olympicsState is DefaultOlympicsState){
                     return Expanded(

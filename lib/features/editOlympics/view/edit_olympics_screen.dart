@@ -401,7 +401,7 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
             if(state.needToReturn){
               Navigator.pop(context);
             }
-            context.read<OlympicsBloc>().add(GetOlympicsEvent(state.olympicsPath));
+            context.read<HomeOlympicsBloc>().add(GetOlympicsEvent(state.olympicsPath));
           }
           else if(state is EditOlympicsErrorState){
             showStatusSnackbar(context, Colors.red, Icons.error_outline, state.message);

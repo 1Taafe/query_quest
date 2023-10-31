@@ -1,20 +1,20 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:query_quest/features/home/olympicsBloc/OlympicsEvent.dart';
-import 'package:query_quest/features/home/olympicsBloc/OlympicsState.dart';
+import 'package:query_quest/features/home/olympicsBloc/home_olympics_event.dart';
+import 'package:query_quest/features/home/olympicsBloc/home_olympics_state.dart';
 import 'package:query_quest/repositories/olympics/OlympicsRepository.dart';
 
 import '../../../repositories/shared_prefs/shared_preferences.dart';
 
-class OlympicsBloc extends Bloc<OlympicsEvent, OlympicsState>{
+class HomeOlympicsBloc extends Bloc<HomeOlympicsEvent, HomeOlympicsState>{
 
   final OlympicsRepository olympicsRepository;
   final SharedPrefs sharedPrefs;
 
-  OlympicsBloc(this.olympicsRepository, this.sharedPrefs) : super(GetOlympicsState()){
+  HomeOlympicsBloc(this.olympicsRepository, this.sharedPrefs) : super(GetOlympicsState()){
     on<GetOlympicsEvent>(_getOlympicsHandler);
   }
 
-  Future<void> _getOlympicsHandler(OlympicsEvent event, Emitter<OlympicsState> emitter) async {
+  Future<void> _getOlympicsHandler(HomeOlympicsEvent event, Emitter<HomeOlympicsState> emitter) async {
     try{
       emitter(GetOlympicsState());
       final token = await sharedPrefs.getToken();

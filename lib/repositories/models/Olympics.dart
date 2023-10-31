@@ -13,6 +13,7 @@ class Olympics{
   DateTime? startDateTime;
   DateTime? endDateTime;
   User? creator;
+  bool? isAccessed;
 
   Olympics(
       this.id,
