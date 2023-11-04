@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_countdown_timer/current_remaining_time.dart';
@@ -47,10 +48,14 @@ class _UnavailableOlympicsViewState extends State<UnavailableOlympicsView> {
                         tag: state.olympics.id!,
                         child: ClipRRect(
                           borderRadius: BorderRadius.all(Radius.circular(12)),
-                          child: Image.network(
-                            state.olympics.image!,
+                          child: CachedNetworkImage(
                             fit: BoxFit.cover,
-                          ),
+                            imageUrl: state.olympics.image!,
+                            placeholder: (context, url) => Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                            errorWidget: (context, url, error) => Icon(Icons.image_not_supported_outlined),
+                          )
                         )
                     ),
                   ),

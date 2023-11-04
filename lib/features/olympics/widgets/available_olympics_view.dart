@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_countdown_timer/current_remaining_time.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:query_quest/features/olympics/olympics_feature.dart';
+import 'package:query_quest/features/olympics/widgets/task_view.dart';
 
 import '../bloc/olympics_bloc.dart';
 
@@ -86,7 +87,7 @@ class _AvailableOlympicsViewState extends State<AvailableOlympicsView> {
         ],
       ),
       body: Container(
-        width: double.infinity,
+        width: MediaQuery.of(context).size.width,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -108,7 +109,7 @@ class _AvailableOlympicsViewState extends State<AvailableOlympicsView> {
                         margin: EdgeInsets.fromLTRB(8, 2, 0, 10),
                         child: ElevatedButton(
                             onPressed: (){
-
+                              context.read<TaskBloc>().add(TaskLoadEvent(state.tasks[index].id!, index + 1));
                             },
                             child: Text('${index+1}')
                         ),
@@ -117,6 +118,7 @@ class _AvailableOlympicsViewState extends State<AvailableOlympicsView> {
                   ),
                 )
             ),
+            TaskView(),
           ],
         ),
       )

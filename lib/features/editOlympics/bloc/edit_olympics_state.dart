@@ -13,7 +13,8 @@ class EditOlympicsDefaultState extends EditOlympicsState{
   final Olympics olympics;
   final List<Task> tasks;
   final String olympicsPath;
-  EditOlympicsDefaultState(this.olympics, this.olympicsPath, this.tasks);
+  final String queryResult;
+  EditOlympicsDefaultState(this.olympics, this.olympicsPath, this.tasks, this.queryResult);
 }
 
 class EditOlympicsLoadingState extends EditOlympicsState{

@@ -1,5 +1,6 @@
 import 'dart:html';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:query_quest/features/home/home_feature.dart';
@@ -53,32 +54,20 @@ class _CreateOlympicsScreenState extends State<CreateOlympicsScreen> {
                     //mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(height: 32,),
-                      Visibility(
-                        visible: image.isNotEmpty,
-                        child: Container(
-                          height: 220.0,
-                          width: 320.0,
-                          decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: NetworkImage(image),
+                      Container(
+                        height: 260.0,
+                        width: 360.0,
+                          child: ClipRRect(
+                              borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+                              child: CachedNetworkImage(
                                 fit: BoxFit.cover,
-                              ),
-                              shape: BoxShape.rectangle,
-                              borderRadius: BorderRadius.all(Radius.circular(8))
-                          ),
-                        ),
-                        replacement: Container(
-                          height: 220.0,
-                          width: 320.0,
-                          child: Icon(
-                              Icons.photo_outlined,
-                            size: 128,
-                          ),
-                          decoration: BoxDecoration(
-                              shape: BoxShape.rectangle,
-                              borderRadius: BorderRadius.all(Radius.circular(8))
-                          ),
-                        ),
+                                imageUrl: image,
+                                placeholder: (context, url) => Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                                errorWidget: (context, url, error) => Icon(Icons.image_not_supported_outlined),
+                              )
+                          )
                       ),
                       SizedBox(height: 32,),
                       Container(
@@ -103,12 +92,7 @@ class _CreateOlympicsScreenState extends State<CreateOlympicsScreen> {
                           ),
                           onChanged: (value){
                             setState(() {
-                              if (isUrl(value)) {
-                                image = value;
-                              }
-                              else{
-                                image = "";
-                              }
+                              image = value;
                             });
                           },
                         ),

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:query_quest/features/home/home_feature.dart';
@@ -16,12 +17,15 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
 
   TextEditingController newTitleController = TextEditingController();
   TextEditingController newSolutionController = TextEditingController();
+  TextEditingController queryController = TextEditingController();
+  TextEditingController resultController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<EditOlympicsBloc, EditOlympicsState>(
         builder: (context, state){
           if(state is EditOlympicsDefaultState){
+            resultController.text = state.queryResult;
             return Scaffold(
               appBar: AppBar(
                 centerTitle: true,
@@ -148,10 +152,14 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                                 tag: state.olympics.id!,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.all(Radius.circular(12)),
-                                  child: Image.network(
-                                    state.olympics.image!,
+                                  child: CachedNetworkImage(
                                     fit: BoxFit.cover,
-                                  ),
+                                    imageUrl: state.olympics.image!,
+                                    placeholder: (context, url) => Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                    errorWidget: (context, url, error) => Icon(Icons.image_not_supported_outlined),
+                                  )
                                 )
                             ),
                           ),
@@ -259,6 +267,7 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                                       child: TextField(
                                         maxLines: null,
                                         decoration: InputDecoration(
+                                          label: Text('Задание'),
                                           border: OutlineInputBorder(),
                                         ),
                                         controller: titleController,
@@ -269,6 +278,7 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                                       child: TextField(
                                         maxLines: null,
                                         decoration: InputDecoration(
+                                          label: Text('Ответ'),
                                           border: OutlineInputBorder(),
                                         ),
                                         controller: solutionController,
@@ -363,7 +373,56 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                             }
                         ),
                       ),
+                      SizedBox(height: 16,),
+                      Divider(),
+                      SizedBox(height: 16,),
+                      Text(
+                        'Запрос SQL к базе данных олимпиады',
+                        style: TextStyle(
+                            fontSize: 48,
+                            fontWeight: FontWeight.w600
+                        ),
+                      ),
+                      SizedBox(height: 16,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width / 2 - 90,
+                            child: TextField(
+                              maxLines: null,
+                              decoration: InputDecoration(
+                                label: Text('Запрос SQL'),
+                                border: OutlineInputBorder(),
+                              ),
+                              controller: queryController,
+                            ),
+                          ),
+                          SizedBox(width: 8,),
+                          Container(
+                            width: MediaQuery.of(context).size.width / 2 - 90,
+                            child: TextField(
+                              maxLines: null,
+                              decoration: InputDecoration(
+                                label: Text('Результат выполнения запроса'),
+                                border: OutlineInputBorder(),
+                              ),
+                              controller: resultController,
+                            ),
+                          ),
+                          TextButton(
+                              onPressed: (){
+                                context.read<EditOlympicsBloc>().add(ExecuteQueryEvent(state.olympicsPath, state.tasks, state.olympics, queryController.text));
+                              },
+                              child: Text(
+                                  'Выполнить'
+                              )
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 16,),
                       SizedBox(height: 64,),
+
                     ],
                   ),
                 ),

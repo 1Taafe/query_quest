@@ -12,6 +12,14 @@ class LoadOlympicsEvent extends EditOlympicsEvent{
   LoadOlympicsEvent(this.olympicsId, this.olympicsPath);
 }
 
+class ExecuteQueryEvent extends EditOlympicsEvent{
+  final String olympicsPath;
+  final Olympics olympics;
+  final List<Task> tasks;
+  final String query;
+  ExecuteQueryEvent(this.olympicsPath, this.tasks, this.olympics, this.query);
+}
+
 class CreateTaskEvent extends EditOlympicsEvent{
   final String olympicsPath;
   final Olympics olympics;

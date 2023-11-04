@@ -5,11 +5,151 @@ import 'package:query_quest/repositories/models/Olympics.dart';
 import 'package:query_quest/repositories/models/Task.dart';
 
 import '../exceptions/AppException.dart';
+import '../models/Answer.dart';
 import '../models/User.dart';
 
 class OlympicsRepository {
   final dio = Dio();
   final String url = 'http://localhost:3000';
+
+  Future<Map<String, dynamic>> executeQueryAsUser(String token, int taskId, String query) async {
+    try{
+      final response = await dio.post(
+          '$url/olympics/tasks/$taskId/check',
+          options: Options(
+              headers:  {
+                "Authorization":"Bearer $token"
+              }
+          ),
+          data: {
+            'query': query
+          }
+      );
+      if(response.statusCode == 200 || response.statusCode == 201){
+        Map<String, dynamic> status = Map<String, dynamic>();
+        status['message'] = response.data['message'].toString();
+        return status;
+      }
+      else {
+        final parsedJson = jsonDecode(response.data);
+        throw AppException(parsedJson.toString());
+      }
+    }
+    catch(error){
+      if (error is DioException) {
+        if (error.response != null) {
+          throw AppException(error.response!.data['message'].toString());
+        } else {
+          throw AppException('Network error occurred'); // Handle network errors
+        }
+      } else {
+        throw AppException('An error occurred: $error'); // Handle other errors
+      }
+    }
+  }
+
+  Future<Answer> getAnswer(String token, int taskId) async {
+    try{
+      final response = await dio.get(
+          '$url/olympics/tasks/$taskId/answer',
+          options: Options(
+              headers:  {
+                "Authorization":"Bearer $token"
+              }
+          )
+      );
+
+      final answer = Answer();
+      if(response.data.toString().isNotEmpty){
+        answer.id = response.data['id'];
+        answer.taskId = response.data['taskId'];
+        answer.query = response.data['query'];
+        answer.score = response.data['score'];
+        answer.result = response.data['result'];
+        answer.time = DateTime.tryParse(response.data['time']);
+      }
+      return answer;
+    }
+    catch(error){
+      if (error is DioException) {
+        if (error.response != null) {
+          throw AppException(error.response!.data['message'].toString());
+        } else {
+          throw AppException('Network error occurred'); // Handle network errors
+        }
+      } else {
+        throw AppException('An error occurred: $error'); // Handle other errors
+      }
+    }
+  }
+
+  Future<Task> getTaskById(String token, int taskId) async {
+    try{
+      final response = await dio.get(
+          '$url/olympics/tasks/$taskId',
+          options: Options(
+              headers:  {
+                "Authorization":"Bearer $token"
+              }
+          )
+      );
+
+      final Task task = Task();
+      task.id = response.data['id'];
+      task.title = response.data['title'];
+      task.olympicsId = response.data['olympicsId'];
+      task.solution = response.data['solution'];
+
+      return task;
+    }
+    catch(error){
+      if (error is DioException) {
+        if (error.response != null) {
+          throw AppException(error.response!.data['message'].toString());
+        } else {
+          throw AppException('Network error occurred'); // Handle network errors
+        }
+      } else {
+        throw AppException('An error occurred: $error'); // Handle other errors
+      }
+    }
+  }
+
+  Future<Map<String, dynamic>> executeQuery(String token, int olympcicsId, String query) async {
+    try{
+      final response = await dio.post(
+          '$url/olympics/$olympcicsId',
+          options: Options(
+              headers:  {
+                "Authorization":"Bearer $token"
+              }
+          ),
+          data: {
+            'query': query
+          }
+      );
+      if(response.statusCode == 200 || response.statusCode == 201){
+        Map<String, dynamic> status = Map<String, dynamic>();
+        status['result'] = response.data['result'].toString();
+        return status;
+      }
+      else {
+        final parsedJson = jsonDecode(response.data);
+        throw AppException(parsedJson.toString());
+      }
+    }
+    catch(error){
+      if (error is DioException) {
+        if (error.response != null) {
+          throw AppException(error.response!.data['message'].toString());
+        } else {
+          throw AppException('Network error occurred'); // Handle network errors
+        }
+      } else {
+        throw AppException('An error occurred: $error'); // Handle other errors
+      }
+    }
+  }
 
   Future<Map<String, dynamic>> updateTask(String token, Task task) async {
     try{

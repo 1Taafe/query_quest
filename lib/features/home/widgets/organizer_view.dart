@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -220,10 +221,14 @@ class _OrganizerViewState extends State<OrganizerView> {
                                                             tag: olympics.id!,
                                                             child: ClipRRect(
                                                               borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
-                                                              child: Image.network(
-                                                                olympics.image!,
+                                                              child: CachedNetworkImage(
                                                                 fit: BoxFit.cover,
-                                                              ),
+                                                                imageUrl: olympics.image!,
+                                                                placeholder: (context, url) => Center(
+                                                                  child: CircularProgressIndicator(),
+                                                                ),
+                                                                errorWidget: (context, url, error) => Icon(Icons.image_not_supported_outlined),
+                                                              )
                                                             )
                                                         ),
                                                       ),

@@ -14,6 +14,22 @@ class EditOlympicsBloc extends Bloc<EditOlympicsEvent, EditOlympicsState>{
     on<CreateTaskEvent>(_createTaskHandler);
     on<DeleteTaskEvent>(_deleteTaskHandler);
     on<UpdateTaskEvent>(_updateTaskHandler);
+    on<ExecuteQueryEvent>(_executeQueryHandler);
+  }
+
+  Future<void> _executeQueryHandler(ExecuteQueryEvent event, Emitter<EditOlympicsState> emitter) async {
+    try{
+      emitter(EditOlympicsLoadingState('Выполнение запроса'));
+      final token = await sharedPrefs.getToken();
+      final status = await olympicsRepository.executeQuery(token, event.olympics.id!, event.query);
+      emitter(EditOlympicsSuccessfulState('Запрос выполнен', event.olympicsPath, false));
+      emitter(EditOlympicsDefaultState(event.olympics, event.olympicsPath, event.tasks, status['result']));
+    }
+    catch(error){
+      print(error);
+      emitter(EditOlympicsErrorState(error.toString()));
+      emitter(EditOlympicsDefaultState(event.olympics, event.olympicsPath, event.tasks, ''));
+    }
   }
 
   Future<void> _updateTaskHandler(UpdateTaskEvent event, Emitter<EditOlympicsState> emitter) async {
@@ -24,12 +40,12 @@ class EditOlympicsBloc extends Bloc<EditOlympicsEvent, EditOlympicsState>{
       final olympics = await olympicsRepository.getOlympicsById(token, event.task.olympicsId!);
       final tasks = await olympicsRepository.getOlympicsTasks(token, event.task.olympicsId!);
       emitter(EditOlympicsSuccessfulState(status['message'], event.olympicsPath, false));
-      emitter(EditOlympicsDefaultState(olympics, event.olympicsPath, tasks));
+      emitter(EditOlympicsDefaultState(olympics, event.olympicsPath, tasks, ''));
     }
     catch(error){
       print(error);
       emitter(EditOlympicsErrorState(error.toString()));
-      emitter(EditOlympicsDefaultState(event.olympics, event.olympicsPath, event.tasks));
+      emitter(EditOlympicsDefaultState(event.olympics, event.olympicsPath, event.tasks, ''));
     }
   }
 
@@ -41,12 +57,12 @@ class EditOlympicsBloc extends Bloc<EditOlympicsEvent, EditOlympicsState>{
       final olympics = await olympicsRepository.getOlympicsById(token, event.task.olympicsId!);
       final tasks = await olympicsRepository.getOlympicsTasks(token, event.task.olympicsId!);
       emitter(EditOlympicsSuccessfulState(status['message'], event.olympicsPath, false));
-      emitter(EditOlympicsDefaultState(olympics, event.olympicsPath, tasks));
+      emitter(EditOlympicsDefaultState(olympics, event.olympicsPath, tasks, ''));
     }
     catch(error){
       print(error);
       emitter(EditOlympicsErrorState(error.toString()));
-      emitter(EditOlympicsDefaultState(event.olympics, event.olympicsPath, event.tasks));
+      emitter(EditOlympicsDefaultState(event.olympics, event.olympicsPath, event.tasks, ''));
     }
   }
 
@@ -58,12 +74,12 @@ class EditOlympicsBloc extends Bloc<EditOlympicsEvent, EditOlympicsState>{
       final olympics = await olympicsRepository.getOlympicsById(token, event.task.olympicsId!);
       final tasks = await olympicsRepository.getOlympicsTasks(token, event.task.olympicsId!);
       emitter(EditOlympicsSuccessfulState(status['message'], event.olympicsPath, false));
-      emitter(EditOlympicsDefaultState(olympics, event.olympicsPath, tasks));
+      emitter(EditOlympicsDefaultState(olympics, event.olympicsPath, tasks, ''));
     }
     catch(error){
       print(error);
       emitter(EditOlympicsErrorState(error.toString()));
-      emitter(EditOlympicsDefaultState(event.olympics, event.olympicsPath, event.tasks));
+      emitter(EditOlympicsDefaultState(event.olympics, event.olympicsPath, event.tasks, ''));
     }
   }
 
@@ -73,7 +89,7 @@ class EditOlympicsBloc extends Bloc<EditOlympicsEvent, EditOlympicsState>{
       final token = await sharedPrefs.getToken();
       final olympics = await olympicsRepository.getOlympicsById(token, event.olympicsId);
       final tasks = await olympicsRepository.getOlympicsTasks(token, event.olympicsId);
-      emitter(EditOlympicsDefaultState(olympics, event.olympicsPath, tasks));
+      emitter(EditOlympicsDefaultState(olympics, event.olympicsPath, tasks, ''));
     }
     catch(error){
       print(error);
@@ -93,8 +109,7 @@ class EditOlympicsBloc extends Bloc<EditOlympicsEvent, EditOlympicsState>{
     catch(error){
       print(error);
       emitter(EditOlympicsErrorState(error.toString()));
-      //emitter(EditOlympicsLoadingState('Загрузка'));
-      emitter(EditOlympicsDefaultState(event.olympics, event.olympicsPath, event.tasks));
+      emitter(EditOlympicsDefaultState(event.olympics, event.olympicsPath, event.tasks, ''));
     }
   }
 }

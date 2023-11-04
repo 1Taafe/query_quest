@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:query_quest/features/olympics/view/olympics_screen.dart';
 
+import 'global/auth/auth_feature.dart';
 import 'features/editOlympics/edit_olympics_feature.dart';
 import 'features/home/home_feature.dart';
 import 'features/login/login_feature.dart';
 import 'features/signup/signup_feature.dart';
 import 'features/createOlympics/create_olympics_feature.dart';
-import 'global/auth/auth_feature.dart';
 import 'features/olympics/olympics_feature.dart';
 
 import 'repositories/olympics/OlympicsRepository.dart';
@@ -26,6 +26,7 @@ void main() {
       BlocProvider<CreateOlympicsBloc>(create: (_) => CreateOlympicsBloc(OlympicsRepository(), SharedPrefs())),
       BlocProvider<EditOlympicsBloc>(create: (_) => EditOlympicsBloc()),
       BlocProvider<OlympicsBloc>(create: (_) => OlympicsBloc()),
+      BlocProvider<TaskBloc>(create: (_) => TaskBloc()),
     ],
     child: QueryQuestApp(),
   ));
@@ -54,17 +55,6 @@ class QueryQuestApp extends StatelessWidget {
         useMaterial3: true,
       ),
       initialRoute: '/',
-      // onGenerateRoute: (settings) {
-      //   if (settings.name == "/home") {
-      //     return PageRouteBuilder(
-      //         settings: settings, // Pass this to make popUntil(), pushNamedAndRemoveUntil(), works
-      //         pageBuilder: (_, __, ___) => HomeScreen(),
-      //         transitionsBuilder: (_, a, __, c) => FadeTransition(opacity: a, child: c)
-      //     );
-      //   }
-      //   // Unknown route
-      //   return MaterialPageRoute(builder: (_) => NotFoundScreen());
-      // },
       routes: {
         '/': (context) => LoginScreen(),
         '/signup': (context) => SignupScreen(),
