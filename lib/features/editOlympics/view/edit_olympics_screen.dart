@@ -421,6 +421,18 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                         ],
                       ),
                       SizedBox(height: 16,),
+                      Divider(),
+                      SizedBox(height: 16,),
+                      Container(
+                        child: Text(
+                          'Задания (${state.tasks.length})',
+                          style: TextStyle(
+                              fontSize: 48,
+                              fontWeight: FontWeight.w600
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 16,),
                       SizedBox(height: 64,),
 
                     ],

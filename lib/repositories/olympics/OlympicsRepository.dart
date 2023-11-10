@@ -6,11 +6,106 @@ import 'package:query_quest/repositories/models/Task.dart';
 
 import '../exceptions/AppException.dart';
 import '../models/Answer.dart';
+import '../models/Result.dart';
 import '../models/User.dart';
 
 class OlympicsRepository {
   final dio = Dio();
   final String url = 'http://localhost:3000';
+
+  Future<Map<String, dynamic>> getUserAnswers(String token, int olympicsId) async {
+    try {
+      final response = await dio.get(
+        '$url/olympics/$olympicsId/answers',
+        options: Options(
+            headers: {
+              "Authorization": "Bearer $token"
+            }
+        ),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Map<String, dynamic> status = Map<String, dynamic>();
+        status['message'] = 'Ответы получены';
+        if(response.data.toString().isNotEmpty){
+          final answersList = List<Answer>.empty();
+          for (final answer in response.data){
+            final newAnswer = Answer();
+            newAnswer.id = answer['id'];
+            newAnswer.taskId = answer['taskId'];
+            newAnswer.query = answer['query'];
+            newAnswer.score = answer['score'];
+            newAnswer.result = answer['result'];
+            newAnswer.time = DateTime.tryParse(answer['time']);
+            answersList.add(newAnswer);
+          }
+          status['answers'] = answersList;
+        }
+        else{
+          status['answers'] = [];
+        }
+        return status;
+      }
+      else {
+        final parsedJson = jsonDecode(response.data);
+        throw AppException(parsedJson.toString());
+      }
+    }
+    catch (error) {
+      if (error is DioException) {
+        if (error.response != null) {
+          throw AppException(error.response!.data['message'].toString());
+        } else {
+          throw AppException('Network error occurred'); // Handle network errors
+        }
+      } else {
+        throw AppException('An error occurred: $error'); // Handle other errors
+      }
+    }
+  }
+
+  Future<Map<String, dynamic>> getUserResults(String token, int olympicsId) async {
+    try{
+      final response = await dio.get(
+          '$url/olympics/$olympicsId/results',
+          options: Options(
+              headers:  {
+                "Authorization":"Bearer $token"
+              }
+          ),
+      );
+      if(response.statusCode == 200 || response.statusCode == 201){
+        Map<String, dynamic> status = Map<String, dynamic>();
+        status['message'] = 'Результаты получены';
+        if(response.data.toString().isNotEmpty){
+          final result = Result();
+          result.lastAnswerTime = DateTime.tryParse(response.data['_max']['time']);
+          result.userId = response.data['userId'];
+          result.totalScore = response.data['_sum']['score'];
+          result.place = response.data['place'];
+          status['result'] = result;
+        }
+        else{
+          status['result'] = Result();
+        }
+        return status;
+      }
+      else {
+        final parsedJson = jsonDecode(response.data);
+        throw AppException(parsedJson.toString());
+      }
+    }
+    catch(error){
+      if (error is DioException) {
+        if (error.response != null) {
+          throw AppException(error.response!.data['message'].toString());
+        } else {
+          throw AppException('Network error occurred'); // Handle network errors
+        }
+      } else {
+        throw AppException('An error occurred: $error'); // Handle other errors
+      }
+    }
+  }
 
   Future<Map<String, dynamic>> executeQueryAsUser(String token, int taskId, String query) async {
     try{
@@ -340,6 +435,7 @@ class OlympicsRepository {
           response.data['databaseName'],
           response.data['image']);
       olympics.isAccessed = response.data['isAccessed'];
+      olympics.isFinished = response.data['isFinished'];
       olympics.creator = User();
       olympics.creator?.email = response.data['creator']['email'];
       olympics.creator?.surname = response.data['creator']['surname'];

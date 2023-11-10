@@ -1,4 +1,5 @@
 import '../../../repositories/models/Olympics.dart';
+import '../../../repositories/models/Result.dart';
 import '../../../repositories/models/Task.dart';
 
 abstract class OlympicsState{}
@@ -14,7 +15,8 @@ class OlympicsLoadingState extends OlympicsState{
 class OlympicsUnavailableState extends OlympicsState{
   final Olympics olympics;
   final String currentTime;
-  OlympicsUnavailableState(this.olympics, this.currentTime);
+  final Result result;
+  OlympicsUnavailableState(this.olympics, this.currentTime, this.result);
 }
 
 class OlympicsAvailableState extends OlympicsState{

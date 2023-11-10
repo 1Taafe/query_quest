@@ -4,6 +4,6 @@ class Answer{
   int? userId;
   String? query;
   String? result;
-  int? score;
+  int? score = -1;
   DateTime? time;
 }

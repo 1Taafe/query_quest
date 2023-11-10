@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_countdown_timer/current_remaining_time.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
-import 'package:query_quest/features/editOlympics/bloc/edit_olympics_event.dart';
 
 import '../olympics_feature.dart';
 
@@ -22,6 +21,7 @@ class _UnavailableOlympicsViewState extends State<UnavailableOlympicsView> {
   @override
   Widget build(BuildContext context) {
     final state = context.read<OlympicsBloc>().state as OlympicsUnavailableState;
+    final lastAnswer = state.result.lastAnswerTime!;
     int endTime = state.olympics.startDateTime!.subtract(Duration(hours: 3)).millisecondsSinceEpoch;
     return Scaffold(
       appBar: AppBar(
@@ -113,6 +113,100 @@ class _UnavailableOlympicsViewState extends State<UnavailableOlympicsView> {
                       )
                   ),
                 ],
+              ),
+              SizedBox(height: 16,),
+              Visibility(
+                visible: state.olympics.isFinished! && state.result.userId != -1,
+                  child: Row(
+                    children: [
+                      SizedBox(width: 32,),
+                      Text(
+                        'Результаты',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 36
+                        ),
+                      ),
+                      Spacer(),
+                    ],
+                  ),
+              ),
+              SizedBox(height: 8,),
+              Visibility(
+                visible: state.olympics.isFinished! && state.result.userId != -1,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 32),
+                    child: Table(
+                      border: TableBorder.all(
+                          color: Colors.black12
+                      ),
+                      children: [
+                        TableRow(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Text('Место'),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Text('Количество баллов'),
+                              ),
+                              Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text('Время последнего ответа')
+                              ),
+                            ]
+                        ),
+                        TableRow(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: Container(
+                                        padding: EdgeInsets.fromLTRB(32, 8, 32, 8),
+                                        color: state.result.place! == 1 ? Color.fromRGBO(201, 176, 55, 1) : (state.result.place! == 2 ? Color.fromRGBO(215, 215, 215, 1) : (state.result.place! == 3 ? Color.fromRGBO(106, 56, 5, 1) : Theme.of(context).colorScheme.primary)),
+                                        child: Row(
+                                          children: [
+                                            Visibility(
+                                                child: Icon(
+                                                  Icons.star,
+                                                  color: Colors.white,
+                                                  size: 20,
+                                                ),
+                                              visible: state.result.place! >= 1 && state.result.place! <= 3,
+                                            ),
+                                            SizedBox(width: 24,),
+                                            Text(
+                                              state.result.place.toString(),
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 20
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                )
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Text(state.result.totalScore.toString()),
+                              ),
+                              Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text('${lastAnswer.day.toString().padLeft(2, '0')}.${lastAnswer.month.toString().padLeft(2, '0')}.${lastAnswer.year} ${lastAnswer.hour.toString().padLeft(2, '0')}:${lastAnswer.minute.toString().padLeft(2, '0')}:${lastAnswer.second.toString().padLeft(2, '0')}'),
+                              ),
+                            ]
+                        )
+                      ],
+                    ),
+                  )
               ),
               SizedBox(height: 64,),
             ],

@@ -44,25 +44,25 @@ class _TaskViewState extends State<TaskView> {
                     SizedBox(width: 8,),
                     Card(
                       child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            Text(
+                          padding: EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              Text(
                                 'Задание #${state.taskOrderId}',
-                            ),
-                            Text(
-                              state.task.title!,
-                              style: TextStyle(
-                                  fontSize: 16
                               ),
-                            ),
-                          ],
-                        )
+                              Text(
+                                state.task.title!,
+                                style: TextStyle(
+                                    fontSize: 16
+                                ),
+                              ),
+                            ],
+                          )
                       ),
                     ),
                     Spacer(),
                     Card(
-                      color: state.answer.score == null ? Colors.amber : (state.answer.score == 0 ? Colors.red : Colors.lightGreen),
+                      color: state.answer.score == -1 ? Colors.amber : (state.answer.score == 0 ? Colors.red : Colors.lightGreen),
                       child: Padding(
                           padding: EdgeInsets.all(16),
                           child: Row(
@@ -76,7 +76,7 @@ class _TaskViewState extends State<TaskView> {
                               Column(
                                 children: [
                                   Text(
-                                    state.answer.score == null ? 'Задание не выполнено' : (state.answer.score == 0 ? 'Задание выполнено неверно' : 'Верный ответ сохранен'),
+                                    state.answer.score == -1 ? 'Задание не выполнено' : (state.answer.score == 0 ? 'Задание выполнено неверно' : 'Верный ответ сохранен'),
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 16
@@ -84,13 +84,13 @@ class _TaskViewState extends State<TaskView> {
                                   ),
                                   Visibility(
                                     visible: state.answer.time != null,
-                                      child: Text(
-                                          '${time?.day.toString().padLeft(2, '0')}.${time?.month.toString().padLeft(2, '0')}.${time?.year} ${time?.hour.toString().padLeft(2, '0')}:${time?.minute.toString().padLeft(2, '0')}:${time?.second.toString().padLeft(2, '0')}',
-                                        style: TextStyle(
+                                    child: Text(
+                                      '${time?.day.toString().padLeft(2, '0')}.${time?.month.toString().padLeft(2, '0')}.${time?.year} ${time?.hour.toString().padLeft(2, '0')}:${time?.minute.toString().padLeft(2, '0')}:${time?.second.toString().padLeft(2, '0')}',
+                                      style: TextStyle(
                                           color: Colors.white,
-                                            fontSize: 16
-                                        ),
+                                          fontSize: 16
                                       ),
+                                    ),
                                   )
                                 ],
                               )
@@ -109,18 +109,21 @@ class _TaskViewState extends State<TaskView> {
                     Container(
                       width: MediaQuery.of(context).size.width / 2 - 24,
                       child: TextField(
-                        maxLines: null,
+                        maxLines: 10,
                         controller: answerController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          label: Text('Решение')
+                          label: Text(
+                            'Решение',
+                          ),
                         ),
                       ),
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width / 2 - 24,
                       child: TextField(
-                        maxLines: null,
+                        enabled: false,
+                        maxLines: 10,
                         controller: resultController,
                         decoration: InputDecoration(
                             border: OutlineInputBorder(),
@@ -139,11 +142,11 @@ class _TaskViewState extends State<TaskView> {
                       height: 42,
                       width: 170,
                       child: FilledButton.icon(
-                          onPressed: (){
-                            context.read<TaskBloc>().add(TaskCheckEvent(state.taskOrderId, state.task.id!, answerController.text));
-                          },
-                          icon: Icon(Icons.bolt_rounded),
-                          label: Text('Выполнить'),
+                        onPressed: state.answer.score! <= 0 ? (){
+                          context.read<TaskBloc>().add(TaskCheckEvent(state.taskOrderId, state.task.id!, answerController.text));
+                        } : null,
+                        icon: Icon(Icons.bolt_rounded),
+                        label: Text('Выполнить'),
                       ),
                     ),
                     SizedBox(width: 16,)

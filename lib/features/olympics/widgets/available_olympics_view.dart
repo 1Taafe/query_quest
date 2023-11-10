@@ -86,40 +86,43 @@ class _AvailableOlympicsViewState extends State<AvailableOlympicsView> {
           SizedBox(width: 16,)
         ],
       ),
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            ClipRRect(
-                borderRadius: BorderRadius.only(bottomRight: Radius.circular(16), bottomLeft: Radius.circular(16)),
-                child:
-                Container(
-                  height: 56,
-                  color: Theme.of(context).colorScheme.primary,
-                  padding: EdgeInsets.fromLTRB(16, 4, 16, 4),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: state.tasks.length,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (BuildContext context, int index){
-                      return Container(
-                        width: 86,
-                        margin: EdgeInsets.fromLTRB(8, 2, 0, 10),
-                        child: ElevatedButton(
-                            onPressed: (){
-                              context.read<TaskBloc>().add(TaskLoadEvent(state.tasks[index].id!, index + 1));
-                            },
-                            child: Text('${index+1}')
-                        ),
-                      );
-                    },
-                  ),
-                )
-            ),
-            TaskView(),
-          ],
+      body: SingleChildScrollView(
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              ClipRRect(
+                  borderRadius: BorderRadius.only(bottomRight: Radius.circular(16), bottomLeft: Radius.circular(16)),
+                  child:
+                  Container(
+                    height: 56,
+                    color: Theme.of(context).colorScheme.primary,
+                    padding: EdgeInsets.fromLTRB(16, 4, 16, 4),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: state.tasks.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (BuildContext context, int index){
+                        return Container(
+                          width: 86,
+                          margin: EdgeInsets.fromLTRB(8, 2, 0, 10),
+                          child: ElevatedButton(
+                              onPressed: (){
+                                context.read<TaskBloc>().add(TaskLoadEvent(state.tasks[index].id!, index + 1));
+                              },
+                              child: Text('${index+1}')
+                          ),
+                        );
+                      },
+                    ),
+                  )
+              ),
+              TaskView(),
+              SizedBox(height: 32,)
+            ],
+          ),
         ),
       )
     );

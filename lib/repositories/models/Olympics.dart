@@ -14,6 +14,7 @@ class Olympics{
   DateTime? endDateTime;
   User? creator;
   bool? isAccessed;
+  bool? isFinished;
 
   Olympics(
       this.id,

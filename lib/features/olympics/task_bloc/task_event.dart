@@ -2,6 +2,10 @@ abstract class TaskEvent {
 
 }
 
+class TaskEmptyEvent extends TaskEvent{
+
+}
+
 class TaskLoadEvent extends TaskEvent{
   final int taskId;
   final int taskOrderId;

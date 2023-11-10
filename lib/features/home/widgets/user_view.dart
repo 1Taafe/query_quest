@@ -190,6 +190,7 @@ class _UserViewState extends State<UserView> {
                                               // BlocProvider.of<EditOlympicsBloc>(context).add(LoadOlympicsEvent(olympics.id!, olympicsState.path));
                                               // Navigator.pushNamed(context, '/editOlympics');
                                               context.read<OlympicsBloc>().add(OlympicsLoadEvent(olympics.id!));
+                                              context.read<TaskBloc>().add(TaskEmptyEvent());
                                               Navigator.of(context).pushNamed('/olympics');
                                             },
                                             child: Card(

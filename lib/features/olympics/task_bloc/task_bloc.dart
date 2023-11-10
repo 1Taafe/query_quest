@@ -15,6 +15,17 @@ class TaskBloc extends Bloc<TaskEvent, TaskState>{
   TaskBloc() : super(TaskEmptyState()){
     on<TaskLoadEvent>(_loadTaskHandler);
     on<TaskCheckEvent>(_checkTaskHandler);
+    on<TaskEmptyEvent>(_taskEmptyHandler);
+  }
+
+  Future<void> _taskEmptyHandler(TaskEmptyEvent event, Emitter<TaskState> emitter) async {
+    try{
+      emitter(TaskEmptyState());
+    }
+    catch(error){
+      print(error);
+      emitter(TaskEmptyState());
+    }
   }
 
   Future<void> _checkTaskHandler(TaskCheckEvent event, Emitter<TaskState> emitter) async {
