@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:query_quest/features/olympics/bloc/olympics_event.dart';
+import 'package:query_quest/repositories/models/Answer.dart';
 import 'package:query_quest/repositories/olympics/OlympicsRepository.dart';
 import 'package:query_quest/repositories/shared_prefs/shared_preferences.dart';
 import '../../../repositories/models/Result.dart';
@@ -26,11 +27,12 @@ class OlympicsBloc extends Bloc<OlympicsEvent, OlympicsState>{
       }
       else{
         if(!olympics.isFinished!){
-          emitter(OlympicsUnavailableState(olympics, currentTime, Result()));
+          emitter(OlympicsUnavailableState(olympics, currentTime, Result(), List<Answer>.empty()));
         }
         else{
           final result = await olympicsRepository.getUserResults(token, event.olympicsId);
-          emitter(OlympicsUnavailableState(olympics, currentTime, result['result']));
+          final answers = await olympicsRepository.getUserAnswers(token, event.olympicsId);
+          emitter(OlympicsUnavailableState(olympics, currentTime, result['result'], answers['answers']));
         }
       }
     }

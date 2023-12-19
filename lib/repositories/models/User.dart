@@ -11,5 +11,5 @@ class User{
   int? group;
   String? role;
   String? database;
-
+  String? token;
 }

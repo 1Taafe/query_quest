@@ -1,4 +1,5 @@
 import '../../../repositories/models/Olympics.dart';
+import '../../../repositories/models/Result.dart';
 import '../../../repositories/models/Task.dart';
 
 abstract class EditOlympicsState {
@@ -14,7 +15,8 @@ class EditOlympicsDefaultState extends EditOlympicsState{
   final List<Task> tasks;
   final String olympicsPath;
   final String queryResult;
-  EditOlympicsDefaultState(this.olympics, this.olympicsPath, this.tasks, this.queryResult);
+  final List<Result> results;
+  EditOlympicsDefaultState(this.olympics, this.olympicsPath, this.tasks, this.queryResult, this.results);
 }
 
 class EditOlympicsLoadingState extends EditOlympicsState{

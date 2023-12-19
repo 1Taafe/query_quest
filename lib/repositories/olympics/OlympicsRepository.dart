@@ -27,7 +27,7 @@ class OlympicsRepository {
         Map<String, dynamic> status = Map<String, dynamic>();
         status['message'] = 'Ответы получены';
         if(response.data.toString().isNotEmpty){
-          final answersList = List<Answer>.empty();
+          List<Answer> answersList = [];
           for (final answer in response.data){
             final newAnswer = Answer();
             newAnswer.id = answer['id'];
@@ -51,6 +51,58 @@ class OlympicsRepository {
       }
     }
     catch (error) {
+      if (error is DioException) {
+        if (error.response != null) {
+          throw AppException(error.response!.data['message'].toString());
+        } else {
+          throw AppException('Network error occurred'); // Handle network errors
+        }
+      } else {
+        throw AppException('An error occurred: $error'); // Handle other errors
+      }
+    }
+  }
+
+  Future<Map<String, dynamic>> getOrganizerResults(String token, int olympicsId) async {
+    try{
+      final response = await dio.get(
+        '$url/olympics/$olympicsId/results',
+        options: Options(
+            headers:  {
+              "Authorization":"Bearer $token"
+            }
+        ),
+      );
+      if(response.statusCode == 200 || response.statusCode == 201){
+        Map<String, dynamic> status = Map<String, dynamic>();
+        status['message'] = 'Результаты получены';
+        List<Result> results = [];
+        if(response.data.toString().isNotEmpty){
+          for(var responseElement in response.data){
+            final result = Result();
+            final user = User();
+            result.lastAnswerTime = DateTime.tryParse(responseElement['_max']['time']);
+            result.userId = responseElement['userId'];
+            result.totalScore = responseElement['_sum']['score'];
+            result.place = responseElement['place'];
+            user.surname = responseElement['user']['surname'];
+            user.name = responseElement['user']['name'];
+            user.email = responseElement['user']['email'];
+            user.course = responseElement['user']['course'];
+            user.group = responseElement['user']['group'];
+            result.user = user;
+            results.add(result);
+          }
+        }
+        status['result'] = results;
+        return status;
+      }
+      else {
+        final parsedJson = jsonDecode(response.data);
+        throw AppException(parsedJson.toString());
+      }
+    }
+    catch(error){
       if (error is DioException) {
         if (error.response != null) {
           throw AppException(error.response!.data['message'].toString());

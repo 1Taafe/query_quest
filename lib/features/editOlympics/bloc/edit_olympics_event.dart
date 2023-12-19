@@ -1,5 +1,6 @@
 import 'package:query_quest/repositories/models/Olympics.dart';
 
+import '../../../repositories/models/Result.dart';
 import '../../../repositories/models/Task.dart';
 
 abstract class EditOlympicsEvent {
@@ -17,7 +18,8 @@ class ExecuteQueryEvent extends EditOlympicsEvent{
   final Olympics olympics;
   final List<Task> tasks;
   final String query;
-  ExecuteQueryEvent(this.olympicsPath, this.tasks, this.olympics, this.query);
+  final List<Result> results;
+  ExecuteQueryEvent(this.olympicsPath, this.tasks, this.olympics, this.query, this.results);
 }
 
 class CreateTaskEvent extends EditOlympicsEvent{
@@ -25,7 +27,8 @@ class CreateTaskEvent extends EditOlympicsEvent{
   final Olympics olympics;
   final Task task;
   final List<Task> tasks;
-  CreateTaskEvent(this.olympicsPath, this.task, this.tasks, this.olympics);
+  final List<Result> results;
+  CreateTaskEvent(this.olympicsPath, this.task, this.tasks, this.olympics, this.results);
 }
 
 class UpdateTaskEvent extends EditOlympicsEvent{
@@ -33,7 +36,8 @@ class UpdateTaskEvent extends EditOlympicsEvent{
   final Olympics olympics;
   final Task task;
   final List<Task> tasks;
-  UpdateTaskEvent(this.olympicsPath, this.olympics, this.tasks, this.task);
+  final List<Result> results;
+  UpdateTaskEvent(this.olympicsPath, this.olympics, this.tasks, this.task, this.results);
 }
 
 class DeleteTaskEvent extends EditOlympicsEvent{
@@ -41,13 +45,15 @@ class DeleteTaskEvent extends EditOlympicsEvent{
   final Olympics olympics;
   final Task task;
   final List<Task> tasks;
-  DeleteTaskEvent(this.olympicsPath, this.task, this.tasks, this.olympics);
+  final List<Result> results;
+  DeleteTaskEvent(this.olympicsPath, this.task, this.tasks, this.olympics, this.results);
 }
 
 class DeleteOlympicsEvent extends EditOlympicsEvent{
   final Olympics olympics;
   final String olympicsPath;
   final List<Task> tasks;
-  DeleteOlympicsEvent(this.olympics, this.olympicsPath, this.tasks);
+  final List<Result> results;
+  DeleteOlympicsEvent(this.olympics, this.olympicsPath, this.tasks, this.results);
 }
 

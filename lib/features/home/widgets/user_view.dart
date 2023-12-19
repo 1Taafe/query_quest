@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../repositories/models/Role.dart';
 import '../../editOlympics/edit_olympics_feature.dart';
@@ -76,6 +77,42 @@ class _UserViewState extends State<UserView> {
                       if(value == '/logout'){
                         BlocProvider.of<HomeBloc>(context).add(LogoutEvent());
                       }
+                      else if(value == '/qr'){
+                        showGeneralDialog(
+                          context: context,
+                          pageBuilder: (context, animation, secondaryAnimation) => Scaffold(
+                              backgroundColor: Colors.black87,
+                              body: Scaffold(
+                                  appBar: AppBar(
+                                    title: Text('QR-код учетной записи'),
+                                  ),
+                                  body: Container(
+                                    width: double.infinity,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        SizedBox(height: 64,),
+                                        QrImageView(
+                                          data: state.currentUser.token!,
+                                          version: QrVersions.auto,
+                                          size: 240,
+                                          gapless: false,
+                                        ),
+                                        SizedBox(height: 32,),
+                                        Container(
+                                          width: 600,
+                                          child: Text(
+                                              "Отсканируйте QR-код в мобильном приложении чтобы всегда иметь доступ под рукой к заданиям текущей олимпиады и результатам всех завершенных олимпиад.",
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  )
+                              )
+                          ),
+                        );
+                      }
                     },
                     itemBuilder: (BuildContext context) {
                       return [
@@ -109,6 +146,17 @@ class _UserViewState extends State<UserView> {
                               ],
                             ),
                           ),
+                        ),
+                        PopupMenuItem(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(Icons.qr_code),
+                              SizedBox(width: 16,),
+                              Text('Показать QR-код')
+                            ],
+                          ),
+                          value: '/qr',
                         ),
                         PopupMenuItem(
                           child: Row(

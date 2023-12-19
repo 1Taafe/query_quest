@@ -23,6 +23,29 @@ class _UnavailableOlympicsViewState extends State<UnavailableOlympicsView> {
     final state = context.read<OlympicsBloc>().state as OlympicsUnavailableState;
     final lastAnswer = state.result.lastAnswerTime!;
     int endTime = state.olympics.startDateTime!.subtract(Duration(hours: 3)).millisecondsSinceEpoch;
+    List<Widget> answersTitleList = List.generate(state.answers.length, (index){
+      return Padding(
+        padding: EdgeInsets.all(8),
+        child: Text('№${index + 1}'),
+      );
+    });
+    answersTitleList.insert(0, Padding(
+      padding: EdgeInsets.all(8),
+      child: Text('Задания'),
+      )
+    );
+    List<Widget> answersList = List.generate(state.answers.length, (index){
+      return Padding(
+        padding: EdgeInsets.all(8),
+        child: Text(state.answers[index].score.toString()),
+      );
+    });
+    answersList.insert(0, Padding(
+      padding: EdgeInsets.all(8),
+      child: Text('Количество баллов'),
+      )
+    );
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -172,14 +195,18 @@ class _UnavailableOlympicsViewState extends State<UnavailableOlympicsView> {
                                         child: Row(
                                           children: [
                                             Visibility(
-                                                child: Icon(
-                                                  Icons.star,
-                                                  color: Colors.white,
-                                                  size: 20,
-                                                ),
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.star,
+                                                    color: Colors.white,
+                                                    size: 20,
+                                                  ),
+                                                  SizedBox(width: 24,),
+                                                ],
+                                              ),
                                               visible: state.result.place! >= 1 && state.result.place! <= 3,
                                             ),
-                                            SizedBox(width: 24,),
                                             Text(
                                               state.result.place.toString(),
                                               style: TextStyle(
@@ -207,6 +234,26 @@ class _UnavailableOlympicsViewState extends State<UnavailableOlympicsView> {
                       ],
                     ),
                   )
+              ),
+              SizedBox(height: 12,),
+              Visibility(
+                visible: state.olympics.isFinished! && state.result.userId != -1,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 32),
+                  child: Table(
+                    border: TableBorder.all(
+                        color: Colors.black12
+                    ),
+                    children: [
+                      TableRow(
+                          children: answersTitleList
+                      ),
+                      TableRow(
+                          children: answersList
+                      )
+                    ],
+                  ),
+                ),
               ),
               SizedBox(height: 64,),
             ],

@@ -18,6 +18,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState>{
     try{
       final token = await sharedPrefs.getToken();
       final currentUser = await authRepository.getUserProfile(token);
+      currentUser.token = token;
       if(currentUser.role == Role.Organizer){
         emitter(DefaultOrganizerState(currentUser));
       }

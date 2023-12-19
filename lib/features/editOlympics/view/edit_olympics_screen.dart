@@ -26,6 +26,116 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
         builder: (context, state){
           if(state is EditOlympicsDefaultState){
             resultController.text = state.queryResult;
+            final resultList = List<TableRow>.generate(state.results.length, (index){
+              final result = state.results[index];
+              return TableRow(
+                  children: [
+                    Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: Container(
+                                padding: EdgeInsets.fromLTRB(24, 8, 24, 8),
+                                color: result.place! == 1 ? Color.fromRGBO(201, 176, 55, 1) : (result.place! == 2 ? Color.fromRGBO(215, 215, 215, 1) : (result.place! == 3 ? Color.fromRGBO(106, 56, 5, 1) : Theme.of(context).colorScheme.primary)),
+                                child: Row(
+                                  children: [
+                                    Visibility(
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.star,
+                                            color: Colors.white,
+                                            size: 20,
+                                          ),
+                                          SizedBox(width: 24,),
+                                        ],
+                                      ),
+                                      visible: result.place! >= 1 && result.place! <= 3,
+                                    ),
+                                    Text(
+                                      result.place.toString(),
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
+                        )
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(result.user!.surname!),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(result.user!.name!),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(result.user!.email!),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(result.user!.course.toString()),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(result.user!.group.toString()),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(result.totalScore.toString()),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text('${result.lastAnswerTime!.day.toString().padLeft(2, '0')}.${result.lastAnswerTime!.month.toString().padLeft(2, '0')}.${result.lastAnswerTime!.year} ${result.lastAnswerTime!.hour.toString().padLeft(2, '0')}:${result.lastAnswerTime!.minute.toString().padLeft(2, '0')}:${result.lastAnswerTime!.second.toString().padLeft(2, '0')}'),
+                    ),
+                  ]
+              );
+            });
+            resultList.insert(0, TableRow(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text('Место'),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text('Фамилия'),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text('Имя'),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text('Email'),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text('Курс'),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text('Группа'),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text('Количество баллов'),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text('Время последнего ответа'),
+                ),
+              ]
+            ));
             return Scaffold(
               appBar: AppBar(
                 centerTitle: true,
@@ -87,7 +197,7 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                                   child: TextButton.icon(
                                     onPressed: (){
                                       Navigator.pop(context);
-                                      context.read<EditOlympicsBloc>().add(DeleteOlympicsEvent(state.olympics, state.olympicsPath, state.tasks));
+                                      context.read<EditOlympicsBloc>().add(DeleteOlympicsEvent(state.olympics, state.olympicsPath, state.tasks, state.results));
                                     },
                                     icon: Icon(Icons.delete_outline, color: Colors.redAccent,),
                                     label: Text('Удалить', style: TextStyle(color: Colors.redAccent),),
@@ -189,7 +299,7 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                         child: Text(
                           'Задания (${state.tasks.length})',
                           style: TextStyle(
-                            fontSize: 48,
+                            fontSize: 36,
                             fontWeight: FontWeight.w600
                           ),
                         ),
@@ -227,7 +337,7 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                                   task.olympicsId = state.olympics.id;
                                   task.title = newTitleController.text;
                                   task.solution = newSolutionController.text;
-                                  context.read<EditOlympicsBloc>().add(CreateTaskEvent(state.olympicsPath, task, state.tasks, state.olympics));
+                                  context.read<EditOlympicsBloc>().add(CreateTaskEvent(state.olympicsPath, task, state.tasks, state.olympics, state.results));
                                 },
                                 icon: Icon(Icons.add)
                             ),
@@ -288,7 +398,7 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                                         onPressed: (){
                                           task.title = titleController.text;
                                           task.solution = solutionController.text;
-                                          context.read<EditOlympicsBloc>().add(UpdateTaskEvent(state.olympicsPath, state.olympics, state.tasks, task));
+                                          context.read<EditOlympicsBloc>().add(UpdateTaskEvent(state.olympicsPath, state.olympics, state.tasks, task, state.results));
                                         },
                                         icon: Icon(Icons.save_as_outlined)
                                     ),
@@ -325,7 +435,7 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                                                       child: TextButton.icon(
                                                         onPressed: (){
                                                           Navigator.of(context).pop();
-                                                          context.read<EditOlympicsBloc>().add(DeleteTaskEvent(state.olympicsPath, task, state.tasks, state.olympics));
+                                                          context.read<EditOlympicsBloc>().add(DeleteTaskEvent(state.olympicsPath, task, state.tasks, state.olympics, state.results));
                                                         },
                                                         icon: Icon(Icons.delete_outline, color: Colors.redAccent,),
                                                         label: Text('Удалить', style: TextStyle(color: Colors.redAccent),),
@@ -379,7 +489,7 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                       Text(
                         'Запрос SQL к базе данных олимпиады',
                         style: TextStyle(
-                            fontSize: 48,
+                            fontSize: 36,
                             fontWeight: FontWeight.w600
                         ),
                       ),
@@ -412,7 +522,7 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                           ),
                           TextButton(
                               onPressed: (){
-                                context.read<EditOlympicsBloc>().add(ExecuteQueryEvent(state.olympicsPath, state.tasks, state.olympics, queryController.text));
+                                context.read<EditOlympicsBloc>().add(ExecuteQueryEvent(state.olympicsPath, state.tasks, state.olympics, queryController.text, state.results));
                               },
                               child: Text(
                                   'Выполнить'
@@ -421,20 +531,40 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                         ],
                       ),
                       SizedBox(height: 16,),
-                      Divider(),
-                      SizedBox(height: 16,),
-                      Container(
-                        child: Text(
-                          'Задания (${state.tasks.length})',
-                          style: TextStyle(
-                              fontSize: 48,
-                              fontWeight: FontWeight.w600
-                          ),
-                        ),
+                      Visibility(
+                        visible: state.results.length != 0,
+                          child: Column(
+                            children: [
+                              Divider(),
+                              SizedBox(height: 16,),
+                              Container(
+                                child: Text(
+                                  'Результаты (${state.results.length})',
+                                  style: TextStyle(
+                                      fontSize: 36,
+                                      fontWeight: FontWeight.w600
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 4,),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: Table(
+                                      defaultColumnWidth: IntrinsicColumnWidth(),
+                                      border: TableBorder.all(
+                                          color: Colors.black12
+                                      ),
+                                      children: resultList
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 16,),
+                            ],
+                          )
                       ),
-                      SizedBox(height: 16,),
                       SizedBox(height: 64,),
-
                     ],
                   ),
                 ),
