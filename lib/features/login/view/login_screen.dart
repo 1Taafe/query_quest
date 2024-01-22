@@ -148,6 +148,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                   width: 460,
                                   child: TextField(
                                     controller: emailController,
+                                    onSubmitted: (value){
+                                      var user = User();
+                                      user.email = emailController.text;
+                                      user.password = passwordController.text;
+                                      BlocProvider.of<AuthBloc>(context).add(LoginEvent(user));
+                                    },
                                     decoration: InputDecoration(
                                       prefixIcon: Icon(Icons.alternate_email),
                                       border: OutlineInputBorder(),
@@ -163,6 +169,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: TextField(
                                     controller: passwordController,
                                     obscureText: true,
+                                    onSubmitted: (value){
+                                      var user = User();
+                                      user.email = emailController.text;
+                                      user.password = passwordController.text;
+                                      BlocProvider.of<AuthBloc>(context).add(LoginEvent(user));
+                                    },
                                     decoration: InputDecoration(
                                       prefixIcon: Icon(Icons.password),
                                       border: OutlineInputBorder(),

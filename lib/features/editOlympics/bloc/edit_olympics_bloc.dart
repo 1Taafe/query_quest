@@ -15,6 +15,24 @@ class EditOlympicsBloc extends Bloc<EditOlympicsEvent, EditOlympicsState>{
     on<DeleteTaskEvent>(_deleteTaskHandler);
     on<UpdateTaskEvent>(_updateTaskHandler);
     on<ExecuteQueryEvent>(_executeQueryHandler);
+    on<UpdateOlympicsEvent>(_updateOlympicsHandler);
+  }
+
+  Future<void> _updateOlympicsHandler(UpdateOlympicsEvent event, Emitter<EditOlympicsState> emitter) async {
+    try{
+      emitter(EditOlympicsLoadingState('Изменение олимпиады'));
+      final token = await sharedPrefs.getToken();
+      final status = await olympicsRepository.updateOlympics(token, event.olympicsId, event.name, event.description, event.image);
+      emitter(EditOlympicsSuccessfulState('Олимпиада изменена', event.olympicsPath, false));
+      emitter(EditOlympicsLoadingState('Загрузка'));
+      final olympics = await olympicsRepository.getOlympicsById(token, event.olympicsId);
+      emitter(EditOlympicsDefaultState(olympics, event.olympicsPath, event.tasks, '', event.results));
+    }
+    catch(error){
+      print(error);
+      emitter(EditOlympicsErrorState(error.toString()));
+      emitter(EditOlympicsDefaultState(event.olympics, event.olympicsPath, event.tasks, '', event.results));
+    }
   }
 
   Future<void> _executeQueryHandler(ExecuteQueryEvent event, Emitter<EditOlympicsState> emitter) async {

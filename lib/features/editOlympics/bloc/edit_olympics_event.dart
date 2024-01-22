@@ -7,6 +7,18 @@ abstract class EditOlympicsEvent {
 
 }
 
+class UpdateOlympicsEvent extends EditOlympicsEvent{
+  final String olympicsPath;
+  final Olympics olympics;
+  final int olympicsId;
+  final String name;
+  final String description;
+  final String image;
+  final List<Task> tasks;
+  final List<Result> results;
+  UpdateOlympicsEvent(this.olympicsPath, this.olympics, this.olympicsId, this.name, this.description, this.image, this.tasks, this.results);
+}
+
 class LoadOlympicsEvent extends EditOlympicsEvent{
   final int olympicsId;
   final String olympicsPath;

@@ -507,6 +507,44 @@ class OlympicsRepository {
     }
   }
 
+  Future<Map<String, dynamic>> updateOlympics(String token, int olympicsId, String name, String description, String image) async {
+    try{
+      final response = await dio.put(
+        '$url/olympics/$olympicsId',
+        options: Options(
+            headers:  {
+              "Authorization":"Bearer $token"
+            }
+        ),
+          data: {
+            'name': name,
+            'description': description,
+            'image': image,
+          }
+      );
+      if(response.statusCode == 200 || response.statusCode == 201){
+        Map<String, dynamic> status = Map<String, dynamic>();
+        status['message'] = response.data['message'];
+        return status;
+      }
+      else {
+        final parsedJson = jsonDecode(response.data);
+        throw AppException(parsedJson.toString());
+      }
+    }
+    catch(error){
+      if (error is DioException) {
+        if (error.response != null) {
+          throw AppException(error.response!.data['message'].toString());
+        } else {
+          throw AppException('Network error occurred'); // Handle network errors
+        }
+      } else {
+        throw AppException('An error occurred: $error'); // Handle other errors
+      }
+    }
+  }
+
   Future<Map<String, dynamic>> deleteOlympics(String token, int olympicsId) async {
     try{
       final response = await dio.delete(

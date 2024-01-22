@@ -20,6 +20,10 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
   TextEditingController queryController = TextEditingController();
   TextEditingController resultController = TextEditingController();
 
+  TextEditingController nameController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+  TextEditingController imageController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<EditOlympicsBloc, EditOlympicsState>(
@@ -136,13 +140,38 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                 ),
               ]
             ));
+            nameController.text = state.olympics.name!;
+            descriptionController.text = state.olympics.description!;
+            imageController.text = state.olympics.image!;
             return Scaffold(
               appBar: AppBar(
                 centerTitle: true,
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Theme.of(context).colorScheme.onInverseSurface,
-                title: Text(state.olympics.name!),
+                title: ClipRRect(
+                  borderRadius: BorderRadius.only(topRight: Radius.circular(16), topLeft: Radius.circular(16)),
+                  child: Container(
+                    width: 300,
+                    padding: EdgeInsets.all(8),
+                    color: Colors.white,
+                    child: TextField(
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        border: UnderlineInputBorder(),
+                      ),
+                      controller: nameController,
+                    ),
+                  ),
+                ),
                 actions: [
+                  IconButton(
+                      onPressed: (){
+                        context.read<EditOlympicsBloc>().add(UpdateOlympicsEvent(state.olympicsPath, state.olympics, state.olympics.id!, nameController.text, descriptionController.text, imageController.text, state.tasks, state.results));
+                      },
+                      icon: Icon(Icons.save_as_outlined)
+                  ),
+                  SizedBox(width: 12,),
                   ElevatedButton.icon(
                     onPressed: (){
                       showGeneralDialog(
@@ -288,7 +317,23 @@ class _EditOlympicsScreenState extends State<EditOlympicsScreen> {
                                         fontSize: 36
                                     ),
                                   ),
-                                  Text(state.olympics.description!),
+                                  TextField(
+                                    maxLines: null,
+                                    decoration: InputDecoration(
+                                      label: Text(''),
+                                      border: UnderlineInputBorder(),
+                                    ),
+                                    controller: descriptionController,
+                                  ),
+                                  SizedBox(height: 24,),
+                                  TextField(
+                                    maxLines: null,
+                                    decoration: InputDecoration(
+                                      label: Text('URL изображения'),
+                                      border: UnderlineInputBorder(),
+                                    ),
+                                    controller: imageController,
+                                  ),
                                 ],
                               )
                           ),
