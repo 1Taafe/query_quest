@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:query_quest/features/olympics/view/olympics_screen.dart';
+import 'package:query_quest/features/restorePassword/bloc/restore_password_bloc.dart';
+import 'package:query_quest/features/restorePassword/view/restore_password_screen.dart';
 
 import 'global/auth/auth_feature.dart';
 import 'features/editOlympics/edit_olympics_feature.dart';
@@ -27,6 +29,7 @@ void main() {
       BlocProvider<EditOlympicsBloc>(create: (_) => EditOlympicsBloc()),
       BlocProvider<OlympicsBloc>(create: (_) => OlympicsBloc()),
       BlocProvider<TaskBloc>(create: (_) => TaskBloc()),
+      BlocProvider<RestorePasswordBloc>(create: (_) => RestorePasswordBloc()),
     ],
     child: QueryQuestApp(),
   ));
@@ -58,6 +61,7 @@ class QueryQuestApp extends StatelessWidget {
       routes: {
         '/': (context) => LoginScreen(),
         '/signup': (context) => SignupScreen(),
+        '/restorePassword' : (context) => RestorePasswordScreen(),
         '/home': (context) => context.read<AuthBloc>().state is AuthorizedState ? HomeScreen() : LoginScreen(),
         '/createOlympics': (context) => context.read<AuthBloc>().state is AuthorizedState ? CreateOlympicsScreen() : LoginScreen(),
         '/editOlympics': (context){

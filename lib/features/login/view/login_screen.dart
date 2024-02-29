@@ -121,97 +121,128 @@ class _LoginScreenState extends State<LoginScreen> {
                       Expanded(
                           child: Container(
                             padding: EdgeInsets.all(16),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'QueryQuest – олимпиады по базам данных',
-                                  style: TextStyle(
-                                    fontSize: 20,
+                            child: SingleChildScrollView(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    height: 64,
                                   ),
-                                ),
-                                SizedBox(
-                                  height: 32,
-                                ),
-                                Text(
-                                  'Вход',
-                                  style: TextStyle(
-                                      fontSize: 32,
-                                      fontWeight: FontWeight.w600
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 32,
-                                ),
-                                Container(
-                                  width: 460,
-                                  child: TextField(
-                                    controller: emailController,
-                                    onSubmitted: (value){
-                                      var user = User();
-                                      user.email = emailController.text;
-                                      user.password = passwordController.text;
-                                      BlocProvider.of<AuthBloc>(context).add(LoginEvent(user));
-                                    },
-                                    decoration: InputDecoration(
-                                      prefixIcon: Icon(Icons.alternate_email),
-                                      border: OutlineInputBorder(),
-                                      labelText: 'Электронная почта',
+                                  Text(
+                                    'QueryQuest – олимпиады по базам данных',
+                                    style: TextStyle(
+                                      fontSize: 20,
                                     ),
                                   ),
-                                ),
-                                SizedBox(
-                                  height: 16,
-                                ),
-                                Container(
-                                  width: 460,
-                                  child: TextField(
-                                    controller: passwordController,
-                                    obscureText: true,
-                                    onSubmitted: (value){
-                                      var user = User();
-                                      user.email = emailController.text;
-                                      user.password = passwordController.text;
-                                      BlocProvider.of<AuthBloc>(context).add(LoginEvent(user));
-                                    },
-                                    decoration: InputDecoration(
-                                      prefixIcon: Icon(Icons.password),
-                                      border: OutlineInputBorder(),
-                                      labelText: 'Пароль',
+                                  SizedBox(
+                                    height: 32,
+                                  ),
+                                  Text(
+                                    'Вход',
+                                    style: TextStyle(
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.w600
                                     ),
                                   ),
-                                ),
-                                SizedBox(
-                                  height: 32,
-                                ),
-                                Container(
-                                  height: 48,
-                                  width: 180,
-                                  child: FilledButton(
-                                      onPressed: (){
+                                  SizedBox(
+                                    height: 32,
+                                  ),
+                                  Container(
+                                    width: 460,
+                                    child: TextField(
+                                      controller: emailController,
+                                      onSubmitted: (value){
                                         var user = User();
                                         user.email = emailController.text;
                                         user.password = passwordController.text;
                                         BlocProvider.of<AuthBloc>(context).add(LoginEvent(user));
                                       },
-                                      child: Text('Войти')
+                                      decoration: InputDecoration(
+                                        prefixIcon: Icon(Icons.alternate_email),
+                                        border: OutlineInputBorder(),
+                                        labelText: 'Электронная почта',
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: 12,),
-                                Container(
-                                  child: TextButton(
-                                      onPressed: (){
-                                        Navigator.pushNamed(context, '/signup');
+                                  SizedBox(
+                                    height: 16,
+                                  ),
+                                  Container(
+                                    width: 460,
+                                    child: TextField(
+                                      controller: passwordController,
+                                      obscureText: true,
+                                      onSubmitted: (value){
+                                        var user = User();
+                                        user.email = emailController.text;
+                                        user.password = passwordController.text;
+                                        BlocProvider.of<AuthBloc>(context).add(LoginEvent(user));
                                       },
-                                      child: Text('Зарегистрироваться')
+                                      decoration: InputDecoration(
+                                        prefixIcon: Icon(Icons.password),
+                                        border: OutlineInputBorder(),
+                                        labelText: 'Пароль',
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                SizedBox(
-                                  height: 0,
-                                ),
-                              ],
-                            ),
+                                  SizedBox(
+                                    height: 32,
+                                  ),
+                                  Container(
+                                    height: 48,
+                                    width: 240,
+                                    child: FilledButton(
+                                        onPressed: (){
+                                          var user = User();
+                                          user.email = emailController.text;
+                                          user.password = passwordController.text;
+                                          BlocProvider.of<AuthBloc>(context).add(LoginEvent(user));
+                                        },
+                                        child: Text('Войти')
+                                    ),
+                                  ),
+                                  SizedBox(height: 16,),
+                                  Container(
+                                    child: TextButton(
+                                      onPressed: () {
+                                        Navigator.pushNamed(context, '/restorePassword', arguments: {
+                                          'email' : emailController.text
+                                        });
+                                      },
+                                      child: Text(
+                                          "Забыли пароль?"
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 24,),
+                                  Divider(
+                                    height: 1,
+                                    indent: 300,
+                                    endIndent: 300,
+                                  ),
+                                  SizedBox(height: 24,),
+                                  Container(
+                                    padding: EdgeInsets.only(bottom: 16),
+                                    child: Text(
+                                        "Вы у нас впервые? Создайте учетную запись, чтобы учавствовать в олимпиадах"
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 40,
+                                    child: FilledButton.tonal(
+                                        onPressed: (){
+                                          Navigator.pushNamed(context, '/signup');
+                                        },
+                                        child: Text('Зарегистрироваться')
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 0,
+                                  ),
+                                ],
+                              ),
+                            )
                           )
                       )
                     ],

@@ -7,6 +7,92 @@ class AuthRepository {
   final dio = Dio();
   final String url = 'http://localhost:3000';
 
+  Future<Map<String, String>> restorePassword(String email, String code, String password) async {
+    try{
+      final response = await dio.post(
+          '$url/auth/restorePassword',
+          data: {
+            'email': email,
+            'code': code,
+            'password': password
+          }
+      );
+      if(response.statusCode == 201){
+        Map<String, String> status = Map<String, String>();
+        status['message'] = response.data['message'].toString();
+        return status;
+      }
+      else {
+        final parsedJson = jsonDecode(response.data);
+        throw AppException(parsedJson.toString());
+      }
+    }
+    catch(error){
+      if (error is DioException) {
+        if (error.response != null) {
+          throw AppException(error.response!.data['message'].toString());
+        } else {
+          throw AppException('Network error occurred'); // Handle network errors
+        }
+      } else {
+        throw AppException('An error occurred: $error'); // Handle other errors
+      }
+    }
+  }
+
+  Future<Map<String, String>> checkRestoreCode(String email, String code) async {
+    try{
+      final response = await dio.get(
+          '$url/auth/checkRestoreCode',
+          queryParameters: {
+            "email": email,
+            "code": code
+          }
+      );
+
+      Map<String, String> status = Map<String, String>();
+      status['message'] = response.data['message'];
+      return status;
+    }
+    catch(error){
+      if (error is DioException) {
+        if (error.response != null) {
+          throw AppException(error.response!.data['message'].toString());
+        } else {
+          throw AppException('Network error occurred'); // Handle network errors
+        }
+      } else {
+        throw AppException('An error occurred: $error'); // Handle other errors
+      }
+    }
+  }
+
+  Future<Map<String, String>> restorePasswordRequest(String email) async {
+    try{
+      final response = await dio.get(
+          '$url/auth/restorePasswordRequest',
+        queryParameters: {
+            "email": email
+        }
+      );
+
+      Map<String, String> status = Map<String, String>();
+      status['message'] = response.data['message'];
+      return status;
+    }
+    catch(error){
+      if (error is DioException) {
+        if (error.response != null) {
+          throw AppException(error.response!.data['message'].toString());
+        } else {
+          throw AppException('Network error occurred'); // Handle network errors
+        }
+      } else {
+        throw AppException('An error occurred: $error'); // Handle other errors
+      }
+    }
+  }
+
   Future<User> getUserProfile(String token) async {
     try{
       final response = await dio.get(
